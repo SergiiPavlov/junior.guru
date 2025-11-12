@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "title": "Junior UA",
+    "description": "Вакансії та події для джунів в Україні"
+  },
+  "navigation": {
+    "home": "Головна",
+    "jobs": "Вакансії",
+    "events": "Події",
+    "about": "Про нас",
+    "privacy": "Політика",
+    "terms": "Умови"
+  },
+  "language": {
+    "label": "Мова",
+    "switchTo": {
+      "uk": "Українська",
+      "en": "English"
+    }
+  },
+  "footer": {
+    "copyright": "© {year} Junior UA — стартова версія"
+  },
+  "home": {
+    "heroTitle": "Вітаємо у Junior UA",
+    "heroSubtitle": "Платформа для джунів: вакансії, події, комʼюніті.",
+    "ctaJobs": "Дивитись вакансії",
+    "ctaEvents": "Події",
+    "latestJobs": "Останні вакансії",
+    "empty": "Поки що немає даних. Запустіть API."
+  },
+  "jobs": {
+    "title": "Вакансії",
+    "filters": {
+      "keyword": "Ключове слово",
+      "city": "Місто",
+      "region": "Регіон",
+      "remote": "Віддалено",
+      "skills": "Скіли",
+      "tags": "Теги",
+      "salaryMin": "Зарплата від",
+      "currency": "Валюта",
+      "experience": "Рівень",
+      "sort": "Сортування",
+      "perPage": "На сторінку",
+      "apply": "Застосувати",
+      "reset": "Скинути"
+    },
+    "sortOptions": {
+      "recent": "Найновіші",
+      "relevant": "Релевантні",
+      "salary_desc": "Зарплата ↓",
+      "salary_asc": "Зарплата ↑"
+    },
+    "empty": "За цим запитом нічого не знайдено.",
+    "openOriginal": "Відкрити оригінал",
+    "openDetails": "Переглянути",
+    "salary": "{min}–{max} {currency}",
+    "salaryFrom": "від {min} {currency}",
+    "pagination": {
+      "page": "Сторінка {page} з {pages}"
+    }
+  },
+  "job": {
+    "back": "← До вакансій",
+    "apply": "Відкрити оригінал",
+    "notFound": "Вакансію не знайдено."
+  },
+  "events": {
+    "title": "Події",
+    "filters": {
+      "keyword": "Пошук",
+      "city": "Місто",
+      "region": "Регіон",
+      "remote": "Онлайн",
+      "skills": "Скіли",
+      "tags": "Теги",
+      "from": "Від",
+      "to": "До",
+      "sort": "Сортування",
+      "apply": "Застосувати",
+      "reset": "Скинути"
+    },
+    "sortOptions": {
+      "soon": "Найближчі",
+      "recent": "Нещодавні"
+    },
+    "empty": "Подій не знайдено.",
+    "openOriginal": "Деталі",
+    "openDetails": "Детальніше",
+    "summary": "{count} подій"
+  },
+  "event": {
+    "back": "← До подій",
+    "register": "Відкрити оригінал",
+    "notFound": "Подію не знайдено."
+  }
+}

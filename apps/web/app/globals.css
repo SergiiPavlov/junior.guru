@@ -11,3 +11,11 @@ a { text-decoration: none; }
 .container { @apply max-w-5xl mx-auto px-4; }
 .card { @apply border rounded-2xl p-4 shadow-sm bg-white; }
 .muted { @apply text-gray-500; }
+
+.input { @apply min-h-[44px] rounded-full border border-black/10 px-4 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black; }
+
+.prose { @apply space-y-4 leading-relaxed; }
+.prose p { @apply text-gray-700; }
+.prose a { @apply text-blue-600 underline; }
+.prose ul { @apply list-disc pl-5; }
+.prose ol { @apply list-decimal pl-5; }
