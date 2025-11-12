@@ -1,10 +1,185 @@
+// Prisma schema for Junior UA platform
+// Datasource configuration for PostgreSQL
 
-// Placeholder schema — заполни моделями на следующем этапе
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
-//
-// generator client {
-//   provider = "prisma-client-js"
-// }
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Source {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  type        String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  jobs        Job[]
+  events      Event[]
+  crawls      Crawl[]
+
+  @@map("sources")
+}
+
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  websiteUrl  String?
+  email       String?
+  location    String?
+  description String?
+  logoUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  jobs        Job[]
+
+  @@map("companies")
+}
+
+model Region {
+  id        String  @id @default(cuid())
+  code      String  @unique
+  nameUk    String
+  nameEn    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  jobs      Job[]
+  events    Event[]
+
+  @@map("regions")
+}
+
+model Tag {
+  id        String        @id @default(cuid())
+  slug      String        @unique
+  nameUk    String
+  nameEn    String?
+  category  String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  jobTags   JobTag[]
+  eventTags EventTag[]
+
+  @@map("tags")
+}
+
+model Job {
+  id             String      @id @default(cuid())
+  sourceId       String
+  companyId      String?
+  regionId       String?
+  title          String
+  slug           String      @unique
+  city           String?
+  remote         Boolean     @default(false)
+  urlOriginal    String?
+  urlApply       String?
+  salaryMin      Int?
+  salaryMax      Int?
+  currency       String?     @db.VarChar(8)
+  experience     String?
+  employmentType String?
+  skills         String[]    @default([])
+  tags           String[]    @default([])
+  descriptionRaw String?
+  description    String?
+  publishedAt    DateTime    @default(now())
+  validUntil     DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  source         Source      @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  company        Company?    @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  region         Region?     @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  jobTags        JobTag[]
+
+  @@index([sourceId])
+  @@index([companyId])
+  @@index([regionId])
+  @@index([remote])
+  @@index([publishedAt])
+  @@index([skills], type: Gin)
+  @@index([tags], type: Gin)
+  @@map("jobs")
+}
+
+model Event {
+  id             String      @id @default(cuid())
+  sourceId       String
+  regionId       String?
+  title          String
+  slug           String      @unique
+  urlOriginal    String?
+  urlRegister    String?
+  venue          String?
+  city           String?
+  remote         Boolean     @default(false)
+  skills         String[]    @default([])
+  tags           String[]    @default([])
+  descriptionRaw String?
+  description    String?
+  startAt        DateTime
+  endAt          DateTime?
+  language       String?     @db.VarChar(8)
+  priceFrom      Int?
+  priceTo        Int?
+  currency       String?     @db.VarChar(8)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  source         Source      @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  region         Region?     @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  eventTags      EventTag[]
+
+  @@index([sourceId])
+  @@index([regionId])
+  @@index([remote])
+  @@index([startAt])
+  @@index([skills], type: Gin)
+  @@index([tags], type: Gin)
+  @@map("events")
+}
+
+model Crawl {
+  id         String   @id @default(cuid())
+  sourceId   String
+  startedAt  DateTime @default(now())
+  finishedAt DateTime?
+  status     String   @default("pending")
+  itemsFound Int      @default(0)
+  error      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  source     Source   @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@index([sourceId])
+  @@map("crawls")
+}
+
+model JobTag {
+  jobId String
+  tagId String
+  assignedAt DateTime @default(now())
+  job   Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([jobId, tagId])
+  @@index([tagId])
+  @@map("job_tags")
+}
+
+model EventTag {
+  eventId String
+  tagId   String
+  assignedAt DateTime @default(now())
+  event  Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tag    Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, tagId])
+  @@index([tagId])
+  @@map("event_tags")
+}
+
