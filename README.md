@@ -15,6 +15,25 @@
 3) Открой http://localhost:3000/uk — увидишь список тестовых вакансий.
    API слушает на http://localhost:8787/api/v1
 
+## Postgres + Meilisearch + mock-воркеры
+1) Подними инфраструктуру через Docker Compose:
+   ```bash
+   docker compose -f ops/docker-compose.yml up -d postgres meilisearch
+   ```
+2) Прокинь переменные окружения и собери Prisma-клиент:
+   ```bash
+   cp .env.example .env.local
+   npm run db:migrate
+   npm run db:seed
+   ```
+3) Импортируй CSV-данные через воркеры (идемпотентные, можно запускать повторно):
+   ```bash
+   npm run workers:jobs
+   npm run workers:events
+   ```
+   После прогона ожидается 39 вакансий и 11 событий в Postgres, а индексы Meilisearch синхронизированы.
+4) Проверить поиск и API можно командами из раздела ниже.
+
 ## Поиск (Meilisearch)
 1) Запусти инфраструктуру:
    ```bash
