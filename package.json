@@ -17,7 +17,8 @@
     "start:api": "npm run -w @junior-ua/api start",
     "start": "npm-run-all -p start:api start:web",
     "db:migrate": "npm run -w @junior-ua/api db:migrate",
-    "db:seed": "npm run -w @junior-ua/api db:seed"
+    "db:seed": "npm run -w @junior-ua/api db:seed",
+    "search:reindex": "npm run -w @junior-ua/api search:reindex"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"

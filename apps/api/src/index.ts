@@ -7,6 +7,8 @@ import { createCors } from './middleware/cors';
 import { createRateLimit } from './middleware/rate-limit';
 import { registerEventRoutes } from './routes/events';
 import { registerJobRoutes } from './routes/jobs';
+import { registerSearchRoutes } from './routes/search';
+import { ensureSearchIndexes } from './search/client';
 
 const app = new Hono();
 
@@ -23,6 +25,11 @@ api.get('/health', (context) => context.json({ ok: true }));
 
 registerJobRoutes(api);
 registerEventRoutes(api);
+registerSearchRoutes(api);
+
+ensureSearchIndexes().catch((error) => {
+  console.error('Failed to initialize search indexes', error);
+});
 
 const port = env.PORT;
 console.log(`API running on http://localhost:${port}`);
