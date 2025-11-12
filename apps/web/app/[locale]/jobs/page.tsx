@@ -1,27 +1,53 @@
-import Link from "next/link";
+import type { Metadata } from "next";
+import { Suspense } from "react";
 
-export default async function JobsPage({ params, searchParams }: { params: { locale: string }, searchParams: { q?: string } }) {
-  const { locale } = params;
-  const url = new URL("http://localhost:8787/api/v1/jobs");
-  if (searchParams.q) url.searchParams.set("q", searchParams.q);
-  const res = await fetch(url, { cache: "no-store" });
-  const data = await res.json();
-  const items = data.items ?? [];
+import { fetchJobsList } from "../../../lib/api";
+import { parseJobsQuery } from "../../../lib/search";
+import { isLocale } from "../../../lib/i18n/config";
+import { getTranslator } from "../../../lib/i18n/server";
+import { JobsList } from "../../../components/jobs/JobsList";
+import { createLanguageAlternates } from "../../../lib/metadata";
+
+type JobsPageParams = {
+  params: Promise<{ locale: string }>;
+};
+
+type JobsPageProps = {
+  params: Promise<{ locale: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export const revalidate = 60;
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: JobsPageParams): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) {
+    return {};
+  }
+  const t = await getTranslator(locale, "jobs");
+  return {
+    title: t("title"),
+    description: t("title"),
+    alternates: createLanguageAlternates("/jobs", locale)
+  };
+}
+
+export default async function JobsPage({ params, searchParams }: JobsPageProps) {
+  const { locale } = await params;
+  if (!isLocale(locale)) {
+    throw new Error("Unsupported locale");
+  }
+
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const query = parseJobsQuery(resolvedSearchParams);
+  const initialData = await fetchJobsList(query, { revalidate });
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Вакансії</h1>
-      <div className="grid gap-4 md:grid-cols-2">
-        {items.map((job: any) => (
-          <article key={job.id} className="card">
-            <div className="text-sm text-gray-500">{job.companyName ?? "—"}</div>
-            <h2 className="text-lg font-semibold">{job.title}</h2>
-            <div className="text-sm">{job.city ?? (job.remote ? "Remote" : "—")}</div>
-            <Link className="mt-2 inline-block underline" href={`/${locale}/jobs/${job.id}`}>Відкрити</Link>
-          </article>
-        ))}
-        {items.length === 0 && <div className="muted">Поки що немає даних.</div>}
-      </div>
-    </div>
+    <Suspense fallback={<div className="grid gap-4 md:grid-cols-2">{Array.from({ length: 4 }).map((_, index) => (
+      <div key={index} className="h-44 w-full animate-pulse rounded-xl bg-gray-200" aria-hidden="true" />
+    ))}</div>}>
+      <JobsList initialData={initialData} initialFilters={query} />
+    </Suspense>
   );
 }
