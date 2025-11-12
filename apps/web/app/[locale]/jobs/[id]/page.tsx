@@ -3,10 +3,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { fetchJob } from "../../../../lib/api";
+import { formatCurrency, formatDate, stripHtml } from "../../../../lib/format";
 import { isLocale } from "../../../../lib/i18n/config";
 import { getTranslator } from "../../../../lib/i18n/server";
-import { createLanguageAlternates } from "../../../../lib/metadata";
-import { formatCurrency, formatDate, stripHtml } from "../../../../lib/format";
+import {
+  createPageMetadata,
+  defaultMetadata,
+  defaultSiteDescription,
+  defaultSiteTitle
+} from "../../../../lib/metadata";
 
 type JobDetailsParams = {
   params: Promise<{ locale: string; id: string }>;
@@ -15,23 +20,30 @@ type JobDetailsParams = {
 export async function generateMetadata({ params }: JobDetailsParams): Promise<Metadata> {
   const { locale, id } = await params;
   if (!isLocale(locale)) {
-    return {};
+    return defaultMetadata;
   }
   try {
     const job = await fetchJob(id);
     const description = stripHtml(job.description) ?? job.title;
-    return {
+    return createPageMetadata({
+      locale,
+      path: `/jobs/${job.slug ?? job.id}`,
       title: job.title,
       description,
-      alternates: createLanguageAlternates(`/jobs/${job.slug ?? job.id}`, locale),
-      openGraph: {
-        title: job.title,
-        description,
-        url: `/${locale}/jobs/${job.id}`
+      imageUrl: job.coverImageUrl,
+      openGraphOverrides: {
+        type: "article",
+        publishedTime: job.publishedAt,
+        modifiedTime: job.validUntil ?? job.publishedAt
       }
-    };
+    });
   } catch {
-    return {};
+    return createPageMetadata({
+      locale,
+      path: `/jobs/${id}`,
+      title: defaultSiteTitle,
+      description: defaultSiteDescription
+    });
   }
 }
 

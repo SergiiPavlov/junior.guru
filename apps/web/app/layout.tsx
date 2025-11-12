@@ -1,18 +1,11 @@
 import type { Metadata } from "next";
+
 import "./globals.css";
 
 import { defaultLocale } from "../lib/i18n/config";
+import { defaultMetadata } from "../lib/metadata";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "Junior UA",
-    template: "%s | Junior UA"
-  },
-  description: "Jobs and events for juniors in Ukraine"
-};
+export const metadata: Metadata = defaultMetadata;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
