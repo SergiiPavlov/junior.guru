@@ -19,6 +19,8 @@
     "db:migrate": "npm run -w @junior-ua/api db:migrate",
     "db:seed": "npm run -w @junior-ua/api db:seed",
     "search:reindex": "npm run -w @junior-ua/api search:reindex",
+    "workers:jobs": "npm run -w @junior-ua/workers jobs:run",
+    "workers:events": "npm run -w @junior-ua/workers events:run",
     "lint:web": "npm run -w @junior-ua/web lint",
     "format:web": "npm run -w @junior-ua/web format",
     "format:web:write": "npm run -w @junior-ua/web format:write",
