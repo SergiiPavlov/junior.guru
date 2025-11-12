@@ -29,7 +29,22 @@ const envSchema = z.object({
     .optional()
     .transform((value) => parseBoolean(value, true)),
   API_RATE_LIMIT_MAX: z.coerce.number().int().min(1).default(60),
-  API_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().min(1000).default(60_000)
+  API_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().min(1000).default(60_000),
+  MEILI_HOST: z
+    .string()
+    .optional()
+    .transform((value) => value ?? 'http://localhost:7700')
+    .refine((value) => {
+      try {
+        // eslint-disable-next-line no-new
+        new URL(value);
+        return true;
+      } catch {
+        return false;
+      }
+    }, 'MEILI_HOST must be a valid URL'),
+  MEILI_MASTER_KEY: z.string().optional().default(''),
+  API_SEARCH_REINDEX_TOKEN: z.string().optional()
 });
 
 const parsed = envSchema.parse(process.env as Record<string, unknown>);

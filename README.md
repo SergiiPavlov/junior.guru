@@ -15,6 +15,23 @@
 3) Открой http://localhost:3000/uk — увидишь список тестовых вакансий.
    API слушает на http://localhost:8787/api/v1
 
+## Поиск (Meilisearch)
+1) Запусти инфраструктуру:
+   ```bash
+   docker compose -f ops/docker-compose.yml up -d meilisearch
+   ```
+2) Скопируй `.env.example` → `.env.local` и пропиши `API_SEARCH_REINDEX_TOKEN=<секрет>`.
+3) Выполни полную переиндексацию:
+   ```bash
+   npm run search:reindex
+   ```
+   Скрипт создаст индексы `jobs` и `events`, обновит документы и синхронизирует данные.
+4) Проверить, что API отдает результаты из Meilisearch:
+   ```bash
+   curl "http://localhost:8787/api/v1/search/jobs?q=react"
+   ```
+   Для повторной индексации через API отправь `POST /api/v1/jobs/reindex` с заголовком `Authorization: Bearer $API_SEARCH_REINDEX_TOKEN`.
+
 ## Структура
 - `apps/web` — Next.js 15 (App Router), базовые страницы `/[locale]`, `/[locale]/jobs`, `/[locale]/events`
 - `apps/api` — Hono (Node server), эндпоинты `/api/v1/jobs`, `/api/v1/events`
