@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #ffffff;
+  --fg: #0a0a0a;
+}
+body { background: var(--bg); color: var(--fg); }
+a { text-decoration: none; }
+.container { @apply max-w-5xl mx-auto px-4; }
+.card { @apply border rounded-2xl p-4 shadow-sm bg-white; }
+.muted { @apply text-gray-500; }
