@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
+import { JobsList } from "../../../components/jobs/JobsList";
 import { fetchJobsList } from "../../../lib/api";
-import { parseJobsQuery } from "../../../lib/search";
 import { isLocale } from "../../../lib/i18n/config";
 import { getTranslator } from "../../../lib/i18n/server";
-import { JobsList } from "../../../components/jobs/JobsList";
-import { createLanguageAlternates } from "../../../lib/metadata";
+import { createPageMetadata, defaultMetadata } from "../../../lib/metadata";
+import { parseJobsQuery } from "../../../lib/search";
 
 type JobsPageParams = {
   params: Promise<{ locale: string }>;
@@ -23,14 +23,18 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: JobsPageParams): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) {
-    return {};
+    return defaultMetadata;
   }
-  const t = await getTranslator(locale, "jobs");
-  return {
-    title: t("title"),
-    description: t("title"),
-    alternates: createLanguageAlternates("/jobs", locale)
-  };
+  const [tJobs, tMeta] = await Promise.all([
+    getTranslator(locale, "jobs"),
+    getTranslator(locale, "meta")
+  ]);
+  return createPageMetadata({
+    locale,
+    path: "/jobs",
+    title: tJobs("title"),
+    description: tMeta("description")
+  });
 }
 
 export default async function JobsPage({ params, searchParams }: JobsPageProps) {

@@ -27,6 +27,7 @@ export type JobListItem = {
   title: string;
   companyName?: string;
   companySlug?: string;
+  coverImageUrl?: string;
   city?: string;
   regionCode?: string;
   remote: boolean;
@@ -55,6 +56,7 @@ export type EventListItem = {
   id: string;
   slug: string;
   title: string;
+  coverImageUrl?: string;
   city?: string;
   regionCode?: string;
   remote: boolean;

@@ -1,15 +1,33 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import type { JobListResponse, JobsQueryInput } from "../../lib/api";
 import { fetchJobsList } from "../../lib/api";
 import { getTranslator } from "../../lib/i18n/server";
 import { isLocale } from "../../lib/i18n/config";
+import { createPageMetadata, defaultMetadata } from "../../lib/metadata";
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
 };
 
 export const revalidate = 60;
+
+export async function generateMetadata({ params }: HomePageProps): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) {
+    return defaultMetadata;
+  }
+
+  const tMeta = await getTranslator(locale, "meta");
+
+  return createPageMetadata({
+    locale,
+    path: "/",
+    title: tMeta("title"),
+    description: tMeta("description")
+  });
+}
 
 export default async function Home({ params }: HomePageProps) {
   const { locale } = await params;

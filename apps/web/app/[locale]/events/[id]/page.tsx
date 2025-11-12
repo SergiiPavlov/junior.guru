@@ -3,10 +3,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { fetchEvent } from "../../../../lib/api";
+import { formatDateRange, stripHtml } from "../../../../lib/format";
 import { isLocale } from "../../../../lib/i18n/config";
 import { getTranslator } from "../../../../lib/i18n/server";
-import { createLanguageAlternates } from "../../../../lib/metadata";
-import { formatDateRange, stripHtml } from "../../../../lib/format";
+import {
+  createPageMetadata,
+  defaultMetadata,
+  defaultSiteDescription,
+  defaultSiteTitle
+} from "../../../../lib/metadata";
 
 type EventDetailsParams = {
   params: Promise<{ locale: string; id: string }>;
@@ -15,18 +20,30 @@ type EventDetailsParams = {
 export async function generateMetadata({ params }: EventDetailsParams): Promise<Metadata> {
   const { locale, id } = await params;
   if (!isLocale(locale)) {
-    return {};
+    return defaultMetadata;
   }
   try {
     const event = await fetchEvent(id);
     const description = stripHtml(event.description) ?? event.title;
-    return {
+    return createPageMetadata({
+      locale,
+      path: `/events/${event.slug ?? event.id}`,
       title: event.title,
       description,
-      alternates: createLanguageAlternates(`/events/${event.slug ?? event.id}`, locale)
-    };
+      imageUrl: event.coverImageUrl,
+      openGraphOverrides: {
+        type: "event",
+        startTime: event.startAt,
+        endTime: event.endAt
+      }
+    });
   } catch {
-    return {};
+    return createPageMetadata({
+      locale,
+      path: `/events/${id}`,
+      title: defaultSiteTitle,
+      description: defaultSiteDescription
+    });
   }
 }
 

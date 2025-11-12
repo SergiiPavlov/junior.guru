@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
+import { EventList } from "../../../components/events/EventList";
 import { fetchEventsList } from "../../../lib/api";
-import { parseEventsQuery } from "../../../lib/search";
 import { isLocale } from "../../../lib/i18n/config";
 import { getTranslator } from "../../../lib/i18n/server";
-import { EventList } from "../../../components/events/EventList";
-import { createLanguageAlternates } from "../../../lib/metadata";
+import { createPageMetadata, defaultMetadata } from "../../../lib/metadata";
+import { parseEventsQuery } from "../../../lib/search";
 
 type EventsPageParams = {
   params: Promise<{ locale: string }>;
@@ -23,14 +23,18 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: EventsPageParams): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) {
-    return {};
+    return defaultMetadata;
   }
-  const t = await getTranslator(locale, "events");
-  return {
-    title: t("title"),
-    description: t("title"),
-    alternates: createLanguageAlternates("/events", locale)
-  };
+  const [tEvents, tMeta] = await Promise.all([
+    getTranslator(locale, "events"),
+    getTranslator(locale, "meta")
+  ]);
+  return createPageMetadata({
+    locale,
+    path: "/events",
+    title: tEvents("title"),
+    description: tMeta("description")
+  });
 }
 
 export default async function EventsPage({ params, searchParams }: EventsPageProps) {
