@@ -1,9 +1,40 @@
 {
   "name": "junior-ua-monorepo",
   "private": true,
-  "packageManager": "pnpm@9.12.0",
+  "packageManager": "npm@10.8.1",
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "scripts": {
+    "dev:web": "npm run -w @junior-ua/web dev",
+    "dev:api": "npm run -w @junior-ua/api dev",
+    "dev": "npm-run-all -p dev:api dev:web",
+    "build:web": "npm run -w @junior-ua/web build",
+    "build:api": "npm run -w @junior-ua/api build",
+    "build": "npm-run-all -s build:api build:web",
+    "start:web": "npm run -w @junior-ua/web start",
+    "start:api": "npm run -w @junior-ua/api start",
+    "start": "npm-run-all -p start:api start:web",
+    "db:migrate": "npm run -w @junior-ua/api db:migrate",
+    "db:seed": "npm run -w @junior-ua/api db:seed",
+    "search:reindex": "npm run -w @junior-ua/api search:reindex",
+    "workers:jobs": "npm run -w @junior-ua/workers jobs:run",
+    "workers:events": "npm run -w @junior-ua/workers events:run",
+    "lint:web": "npm run -w @junior-ua/web lint",
+    "format:web": "npm run -w @junior-ua/web format",
+    "format:web:write": "npm run -w @junior-ua/web format:write",
+    "lint": "npm-run-all -p lint:web",
+    "format": "npm-run-all -p format:web",
+    "all": "npm run dev",
+    "test:e2e": "playwright test",
+    "postinstall": "npm run -w @junior-ua/api prisma:generate"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^20.11.30",
+    "cross-env": "^7.0.3",
+    "npm-run-all": "^4.1.5",
+    "wait-on": "^7.2.0"
+  }
 }

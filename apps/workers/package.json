@@ -1,0 +1,21 @@
+{
+  "name": "@junior-ua/workers",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "jobs:run": "tsx src/cli/jobs.ts",
+    "events:run": "tsx src/cli/events.ts",
+    "test": "tsx --test"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.16.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "prisma": "^5.16.2",
+    "tsx": "^4.7.0",
+    "typescript": "^5.5.4"
+  }
+}

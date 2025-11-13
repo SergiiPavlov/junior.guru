@@ -5,16 +5,51 @@
 Готов к локальному запуску на заглушечных данных. Дальше можно наращивать БД/Prisma, Meilisearch и скраперы.
 
 ## Быстрый старт
-1) Установи pnpm и Node 20+
-2) В двух терминалах запусти фронт и API:
+1) Установи Node 20+ и npm 10+
+2) Установи зависимости и подними фронт+API одной командой:
    ```bash
-   # терминал 1
-   cd apps/api && pnpm i && pnpm dev
-   # терминал 2
-   cd apps/web && pnpm i && pnpm dev
+   npm install
+   npm run dev
    ```
+   Команда `npm run dev` использует `npm-run-all`, чтобы параллельно запустить `apps/api` и `apps/web`.
 3) Открой http://localhost:3000/uk — увидишь список тестовых вакансий.
    API слушает на http://localhost:8787/api/v1
+
+## Postgres + Meilisearch + mock-воркеры
+1) Подними инфраструктуру через Docker Compose:
+   ```bash
+   docker compose -f ops/docker-compose.yml up -d postgres meilisearch
+   ```
+2) Прокинь переменные окружения и собери Prisma-клиент:
+   ```bash
+   cp .env.example .env.local
+   npm run db:migrate
+   npm run db:seed
+   ```
+3) Импортируй CSV-данные через воркеры (идемпотентные, можно запускать повторно):
+   ```bash
+   npm run workers:jobs
+   npm run workers:events
+   ```
+   После прогона ожидается 39 вакансий и 11 событий в Postgres, а индексы Meilisearch синхронизированы.
+4) Проверить поиск и API можно командами из раздела ниже.
+
+## Поиск (Meilisearch)
+1) Запусти инфраструктуру:
+   ```bash
+   docker compose -f ops/docker-compose.yml up -d meilisearch
+   ```
+2) Скопируй `.env.example` → `.env.local` и пропиши `API_SEARCH_REINDEX_TOKEN=<секрет>`.
+3) Выполни полную переиндексацию:
+   ```bash
+   npm run search:reindex
+   ```
+   Скрипт создаст индексы `jobs` и `events`, обновит документы и синхронизирует данные.
+4) Проверить, что API отдает результаты из Meilisearch:
+   ```bash
+   curl "http://localhost:8787/api/v1/search/jobs?q=react"
+   ```
+   Для повторной индексации через API отправь `POST /api/v1/jobs/reindex` с заголовком `Authorization: Bearer $API_SEARCH_REINDEX_TOKEN`.
 
 ## Структура
 - `apps/web` — Next.js 15 (App Router), базовые страницы `/[locale]`, `/[locale]/jobs`, `/[locale]/events`
@@ -27,3 +62,18 @@
 - Добавить Meilisearch и индексацию
 - Вынести UI и shared-типы в packages
 - Реализовать воркеры/скраперы
+
+
+## Admin
+Set `ADMIN_TOKEN` in API environment. Open `/uk/admin`, enter token to login. Buttons allow reindexing jobs/events. Stats are shown from API.
+
+
+
+## Windows (без Docker)
+Если Docker Desktop недоступен:
+1. Поставьте PostgreSQL (локально) или используйте облачную БД. Обновите `DATABASE_URL` в `.env.local`.
+2. Установите зависимости: `npm install` (в корне).
+3. Сгенерируйте Prisma client: `npm run -w @junior-ua/api prisma:generate`.
+4. Миграции/сиды: `npm run db:migrate && npm run db:seed`.
+5. Сборка и старт: `npm run build && npm run start`.
+E2E и Meilisearch требуют Docker — их можно запускать только в CI или после установки Docker Desktop.

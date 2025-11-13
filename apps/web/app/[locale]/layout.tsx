@@ -1,35 +1,43 @@
-import Link from "next/link";
+import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 
-export default function LocaleLayout({
-  children,
-  params
-}: {
-  children: React.ReactNode;
-  params: { locale: string };
-}) {
-  const { locale } = params;
-  const other = locale === "uk" ? "en" : "uk";
+import { Header } from "../../components/layout/Header";
+import { Footer } from "../../components/layout/Footer";
+import { IntlProvider } from "../../lib/i18n/provider";
+import { getMessagesForLocale } from "../../lib/i18n/server";
+import { isLocale, locales, type Locale } from "../../lib/i18n/config";
+import { LocaleEffect } from "../../components/common/LocaleEffect";
+
+export async function generateStaticParams(): Promise<Array<{ locale: Locale }>> {
+  return locales.map((locale) => ({ locale }));
+}
+
+type LocaleLayoutProps = {
+  children: ReactNode;
+  params: Promise<{ locale: string }>;
+};
+const __apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8787';
+let __apiOrigin = __apiBase;
+try { __apiOrigin = new URL(__apiBase).origin; } catch {}
+
+
+import SkipToContent from '@/components/a11y/SkipToContent'
+
+export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
+  const { locale: localeParam } = await params;
+  if (!isLocale(localeParam)) {
+    notFound();
+  }
+  const messages = await getMessagesForLocale(localeParam);
+
   return (
-    <section>
-      <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
-        <div className="container flex items-center gap-4 py-3">
-          <div className="font-bold text-xl">Junior UA</div>
-          <nav className="flex gap-4">
-            <Link href={`/${locale}`}>Головна</Link>
-            <Link href={`/${locale}/jobs`}>Вакансії</Link>
-            <Link href={`/${locale}/events`}>Події</Link>
-          </nav>
-          <div className="ml-auto">
-            <Link className="underline" href={`/${other}`}>{other.toUpperCase()}</Link>
-          </div>
-        </div>
-      </header>
-      <main className="container py-6">{children}</main>
-      <footer className="border-t mt-8">
-        <div className="container py-6 text-sm text-gray-500">
-          © {new Date().getFullYear()} Junior UA — стартова версія
-        </div>
-      </footer>
-    </section>
+    <IntlProvider locale={localeParam} messages={messages}>
+      <LocaleEffect locale={localeParam} />
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <main className="container flex-1 py-6"><main id="main" role="main" tabIndex={-1}>{children}</main></main>
+        <Footer />
+      </div>
+    </IntlProvider>
   );
 }

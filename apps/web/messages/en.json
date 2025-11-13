@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "title": "Junior UA",
+    "description": "Jobs and events for juniors in Ukraine"
+  },
+  "navigation": {
+    "home": "Home",
+    "jobs": "Jobs",
+    "events": "Events",
+    "about": "About",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "language": {
+    "label": "Language",
+    "switchTo": {
+      "uk": "Ukrainian",
+      "en": "English"
+    }
+  },
+  "footer": {
+    "copyright": "© {year} Junior UA — preview"
+  },
+  "home": {
+    "heroTitle": "Welcome to Junior UA",
+    "heroSubtitle": "A platform for juniors: jobs, events, community.",
+    "ctaJobs": "Browse jobs",
+    "ctaEvents": "Events",
+    "latestJobs": "Latest jobs",
+    "empty": "No data yet. Start the API."
+  },
+  "jobs": {
+    "title": "Jobs",
+    "filters": {
+      "keyword": "Keyword",
+      "city": "City",
+      "region": "Region",
+      "remote": "Remote",
+      "skills": "Skills",
+      "tags": "Tags",
+      "salaryMin": "Salary from",
+      "currency": "Currency",
+      "experience": "Experience",
+      "sort": "Sort",
+      "perPage": "Per page",
+      "apply": "Apply",
+      "reset": "Reset"
+    },
+    "sortOptions": {
+      "recent": "Newest",
+      "relevant": "Relevant",
+      "salary_desc": "Salary ↓",
+      "salary_asc": "Salary ↑"
+    },
+    "empty": "No jobs match your filters.",
+    "openOriginal": "Open original",
+    "openDetails": "View",
+    "salary": "{min}–{max} {currency}",
+    "salaryFrom": "from {min} {currency}",
+    "pagination": {
+      "page": "Page {page} of {pages}"
+    }
+  },
+  "job": {
+    "back": "← Back to jobs",
+    "apply": "Open original",
+    "notFound": "Job not found."
+  },
+  "events": {
+    "title": "Events",
+    "filters": {
+      "keyword": "Search",
+      "city": "City",
+      "region": "Region",
+      "remote": "Online",
+      "skills": "Skills",
+      "tags": "Tags",
+      "from": "From",
+      "to": "To",
+      "sort": "Sort",
+      "apply": "Apply",
+      "reset": "Reset"
+    },
+    "sortOptions": {
+      "soon": "Upcoming",
+      "recent": "Recent"
+    },
+    "empty": "No events found.",
+    "openOriginal": "Details",
+    "openDetails": "View",
+    "summary": "{count} events"
+  },
+  "event": {
+    "back": "← Back to events",
+    "register": "Open original",
+    "notFound": "Event not found."
+  }
+}
