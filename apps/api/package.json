@@ -15,13 +15,13 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.11.0",
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^5.16.2",
     "hono": "^4.6.8"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
-    "prisma": "^5.22.0",
-    "tsx": "^4.20.6",
+    "prisma": "^5.16.2",
+    "tsx": "^4.7.0",
     "typescript": "^5.5.4"
   }
 }
