@@ -1,9 +1,10 @@
-import type { MetadataRoute } from "next";
 
-import type { EventListItem, JobListItem, EventListResponse, JobListResponse } from "../lib/api";
 import { fetchEventsList, fetchJobsList } from "../lib/api";
 import { locales } from "../lib/i18n/config";
 import { metadataBase } from "../lib/metadata";
+
+import type { EventListItem, JobListItem, EventListResponse, JobListResponse } from "../lib/api";
+import type { MetadataRoute } from "next";
 
 const FETCH_REVALIDATE = 60;
 const PAGE_SIZE = 100;

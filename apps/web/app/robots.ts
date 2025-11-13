@@ -1,6 +1,7 @@
+import { siteUrl } from "../lib/metadata";
+
 import type { MetadataRoute } from "next";
 
-import { siteUrl } from "../lib/metadata";
 
 const DISALLOWED_PATHS = ["/api/", "/api/*", "/admin", "/dashboard", "/drafts", "/private"];
 

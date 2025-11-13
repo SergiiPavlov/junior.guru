@@ -57,6 +57,7 @@ jobs:
         run: |
           cp .env.example .env.local
           echo "NEXT_PUBLIC_API_BASE=http://localhost:8787" >> .env.local
+          echo "NEXT_PUBLIC_API_BASE=http://localhost:8787" >> "$GITHUB_ENV"
       - name: DB migrate & seed
         run: |
           npm run db:migrate
@@ -65,7 +66,7 @@ jobs:
         run: npm run build
       - name: Start app
         run: |
-          nohup npm run start >/dev/null 2>&1 &
+          npm run start >/dev/null 2>&1 &
           npx wait-on -t 120000 http://localhost:8787 http://localhost:3000
       - name: Install Playwright
         run: npx playwright install --with-deps

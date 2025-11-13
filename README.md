@@ -15,6 +15,14 @@
 3) Открой http://localhost:3000/uk — увидишь список тестовых вакансий.
    API слушает на http://localhost:8787/api/v1
 
+## Local dev (Windows + Linux)
+1) Скопируй `.env.example` → `.env.local` и при необходимости обнови `DATABASE_URL` под свою среду.
+2) Подними Postgres из Docker Compose или локально (по умолчанию используется порт `5432`).
+3) Установи зависимости один раз: `npm install`.
+4) Прогоняй миграции и сиды одной командой — `npm run db:migrate && npm run db:seed`.
+5) Для разработки запускай обе части стека одной командой, совместимой с Windows и Linux: `npm run all`.
+6) Проверь, что доступны http://localhost:3000/uk/jobs и http://localhost:3000/uk/events — страницы работают поверх API на http://localhost:8787.
+
 ## Postgres + Meilisearch + mock-воркеры
 1) Подними инфраструктуру через Docker Compose:
    ```bash

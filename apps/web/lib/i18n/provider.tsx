@@ -3,9 +3,10 @@
 import type { PropsWithChildren } from "react";
 import { createContext, useContext, useMemo } from "react";
 
+import { createTranslator } from "./translate";
+
 import type { Locale } from "./config";
 import type { Messages } from "./messages";
-import { createTranslator } from "./translate";
 
 interface IntlContextValue {
   locale: Locale;
