@@ -7,6 +7,8 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/junior_ua?schema=public
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -20,6 +22,8 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/junior_ua?schema=public
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,6 +31,7 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
+      - run: npm run -w @junior-ua/api prisma:generate
       - run: npm run build
       - name: Upload build artifacts
         if: always()
@@ -40,10 +45,9 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
-    services:
-      docker:
-        image: docker:24.0.6-dind
-        options: --privileged
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/junior_ua?schema=public
+      NEXT_PUBLIC_API_BASE: http://localhost:8787/api/v1
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -53,16 +57,11 @@ jobs:
       - run: npm ci
       - name: Start infra (postgres, meili, redis)
         run: docker compose -f ops/docker-compose.yml up -d
-      - name: Env
-        run: |
-          cp .env.example .env.local
-          echo "NEXT_PUBLIC_API_BASE=http://localhost:8787" >> .env.local
-          echo "NEXT_PUBLIC_API_BASE=http://localhost:8787" >> "$GITHUB_ENV"
-      - name: DB migrate & seed
+      - name: Prepare database
         run: |
           npm run db:migrate
           npm run db:seed
-      - name: Build
+      - name: Build app
         run: npm run build
       - name: Start app
         run: |

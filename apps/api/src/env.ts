@@ -44,7 +44,7 @@ const envSchema = z.object({
       }
     }, 'MEILI_HOST must be a valid URL'),
   MEILI_MASTER_KEY: z.string().optional().default(''),
-  API_SEARCH_REINDEX_TOKEN: z.string().optional()
+  API_ADMIN_TOKEN: z.string().optional().default('')
 });
 
 const parsed = envSchema.parse(process.env as Record<string, unknown>);

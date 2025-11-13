@@ -75,6 +75,12 @@ class MeiliIndex<TDocument> {
       body: { q: query, ...params }
     });
   }
+
+  async getStats() {
+    return this.client.request<{ numberOfDocuments?: number }>(`/indexes/${this.name}/stats`, {
+      method: 'GET'
+    });
+  }
 }
 
 class MeiliHttpClient {
