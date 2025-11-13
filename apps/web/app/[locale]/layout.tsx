@@ -16,6 +16,12 @@ type LocaleLayoutProps = {
   children: ReactNode;
   params: Promise<{ locale: string }>;
 };
+const __apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8787';
+let __apiOrigin = __apiBase;
+try { __apiOrigin = new URL(__apiBase).origin; } catch {}
+
+
+import SkipToContent from '@/components/a11y/SkipToContent'
 
 export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
   const { locale: localeParam } = await params;
@@ -29,7 +35,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <LocaleEffect locale={localeParam} />
       <div className="flex min-h-screen flex-col">
         <Header />
-        <main className="container flex-1 py-6">{children}</main>
+        <main className="container flex-1 py-6"><main id="main" role="main" tabIndex={-1}>{children}</main></main>
         <Footer />
       </div>
     </IntlProvider>

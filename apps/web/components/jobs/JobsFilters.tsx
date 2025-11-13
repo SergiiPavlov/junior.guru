@@ -68,7 +68,7 @@ export function JobsFilters() {
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("keyword")}</span>
-          <input name="q" defaultValue={currentValues.q} className="input" placeholder={t("keyword")} />
+          <input name="q" defaultValue={currentValues.q} className="input" placeholder={t("keyword")} / aria-label=\"Пошук вакансій\" >
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("city")}</span>
@@ -136,14 +136,14 @@ export function JobsFilters() {
           <button
             type="submit"
             className="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-full bg-black px-4 text-sm font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-          >
+           aria-label=\"Застосувати фільтри\">
             {t("apply")}
           </button>
           <button
             type="button"
             onClick={handleReset}
             className="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-full border border-black/10 px-4 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-          >
+           aria-label=\"Застосувати фільтри\">
             {t("reset")}
           </button>
         </div>

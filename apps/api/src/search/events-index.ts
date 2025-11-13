@@ -113,3 +113,7 @@ export async function reindexEvents(prisma: PrismaClient) {
   const documents = events.map(mapEventToSearchDocument);
   await meiliClient.index<EventSearchDocument>(EVENTS_INDEX).replaceDocuments(documents);
 }
+
+export async function reindexEventsAll(items: any[]) { const idx = client.index('events'); await idx.deleteAllDocuments(); const res = await idx.addDocuments(items); return { count: items.length, task: res }; }
+
+export const eventsIndex_count = async () => (await client.index('events').stats()).numberOfDocuments

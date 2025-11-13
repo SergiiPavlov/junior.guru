@@ -54,3 +54,6 @@ export const env = parsed;
 type Env = typeof env;
 
 export type { Env };
+
+// Optional admin token for protected endpoints
+export const ADMIN_TOKEN = process.env.ADMIN_TOKEN || ''

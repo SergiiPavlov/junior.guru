@@ -25,9 +25,16 @@
     "format:web": "npm run -w @junior-ua/web format",
     "format:web:write": "npm run -w @junior-ua/web format:write",
     "lint": "npm-run-all -p lint:web",
-    "format": "npm-run-all -p format:web"
+    "format": "npm-run-all -p format:web",
+    "all": "npm run dev",
+    "test:e2e": "playwright test",
+    "postinstall": "npm run -w @junior-ua/api prisma:generate"
   },
   "devDependencies": {
-    "npm-run-all": "^4.1.5"
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^20.11.30",
+    "cross-env": "^7.0.3",
+    "npm-run-all": "^4.1.5",
+    "wait-on": "^7.2.0"
   }
 }
