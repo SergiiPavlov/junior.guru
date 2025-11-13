@@ -3,7 +3,6 @@ import test from 'node:test';
 
 import { Hono } from 'hono';
 
-import { env } from '../../env';
 import { registerSearchRoutes } from '../search';
 
 const sampleJob = {
@@ -37,8 +36,7 @@ test('GET /search/jobs forwards query params and returns search results', async 
     searchJobs: async (input) => {
       capturedInput = input;
       return { items: [sampleJob], total: 1 };
-    },
-    reindexAll: async () => {}
+    }
   });
 
   const response = await app.request('/search/jobs?q=react&page=2&perPage=5');
@@ -57,29 +55,3 @@ test('GET /search/jobs forwards query params and returns search results', async 
   assert.equal(input.perPage, 5);
 });
 
-test('POST /jobs/reindex requires authorization', async () => {
-  env.API_SEARCH_REINDEX_TOKEN = 'secret-token';
-
-  let reindexCalled = false;
-
-  const app = new Hono();
-  registerSearchRoutes(app, {
-    searchJobs: async () => ({ items: [sampleJob], total: 1 }),
-    reindexAll: async () => {
-      reindexCalled = true;
-    }
-  });
-
-  const unauthorized = await app.request('/jobs/reindex', { method: 'POST' });
-  assert.equal(unauthorized.status, 401);
-  assert.equal(reindexCalled, false);
-
-  const authorized = await app.request('/jobs/reindex', {
-    method: 'POST',
-    headers: {
-      Authorization: 'Bearer secret-token'
-    }
-  });
-  assert.equal(authorized.status, 200);
-  assert.equal(reindexCalled, true);
-});

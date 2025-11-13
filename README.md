@@ -47,7 +47,7 @@
    ```bash
    docker compose -f ops/docker-compose.yml up -d meilisearch
    ```
-2) Скопируй `.env.example` → `.env.local` и пропиши `API_SEARCH_REINDEX_TOKEN=<секрет>`.
+2) Скопируй `.env.example` → `.env.local` и пропиши `API_ADMIN_TOKEN=<секрет>`.
 3) Выполни полную переиндексацию:
    ```bash
    npm run search:reindex
@@ -57,7 +57,7 @@
    ```bash
    curl "http://localhost:8787/api/v1/search/jobs?q=react"
    ```
-   Для повторной индексации через API отправь `POST /api/v1/jobs/reindex` с заголовком `Authorization: Bearer $API_SEARCH_REINDEX_TOKEN`.
+   Для повторной индексации через API отправь `POST /api/v1/jobs/reindex` с заголовком `x-admin-token: $API_ADMIN_TOKEN`.
 
 ## Структура
 - `apps/web` — Next.js 15 (App Router), базовые страницы `/[locale]`, `/[locale]/jobs`, `/[locale]/events`

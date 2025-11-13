@@ -46,8 +46,6 @@ function EventListContent({ initialData, initialFilters }: { initialData: EventL
     return () => controller.abort();
   }, [filters]);
 
-  const totalPages = Math.max(1, Math.ceil(data.total / data.perPage));
-
   return (
     <div className="space-y-6">
       <EventFilters />

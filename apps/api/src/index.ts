@@ -5,6 +5,7 @@ import { logger } from 'hono/logger';
 import { env } from './env';
 import { createCors } from './middleware/cors';
 import { createRateLimit } from './middleware/rate-limit';
+import { registerAdminRoutes } from './routes/admin';
 import { registerEventRoutes } from './routes/events';
 import { registerJobRoutes } from './routes/jobs';
 import { registerSearchRoutes } from './routes/search';
@@ -26,6 +27,7 @@ api.get('/health', (context) => context.json({ ok: true }));
 registerJobRoutes(api);
 registerEventRoutes(api);
 registerSearchRoutes(api);
+registerAdminRoutes(api);
 
 ensureSearchIndexes().catch((error) => {
   console.error('Failed to initialize search indexes', error);

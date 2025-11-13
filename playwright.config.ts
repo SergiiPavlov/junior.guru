@@ -7,11 +7,10 @@ export default defineConfig({
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    video: 'off',
+    video: 'off'
   },
   reporter: [
-    ['list'],
-    ['html', { outputFolder: 'playwright-report', open: 'never' }],
-    ['junit', { outputFile: 'playwright-report/junit.xml' }]
-  ],
+    ['html', { open: 'never' }],
+    ['junit', { outputFile: 'report.xml' }]
+  ]
 });

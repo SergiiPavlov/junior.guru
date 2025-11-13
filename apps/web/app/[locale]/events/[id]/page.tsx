@@ -31,12 +31,7 @@ export async function generateMetadata({ params }: EventDetailsParams): Promise<
       path: `/events/${event.slug ?? event.id}`,
       title: event.title,
       description,
-      imageUrl: event.coverImageUrl,
-      openGraphOverrides: {
-        type: "event",
-        startTime: event.startAt,
-        endTime: event.endAt
-      }
+      imageUrl: event.coverImageUrl
     });
   } catch {
     return createPageMetadata({
