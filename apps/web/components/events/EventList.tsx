@@ -1,15 +1,18 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+
 import { useSearchParams } from "next/navigation";
 
-import type { EventListResponse, EventsQueryInput } from "../../lib/api";
 import { fetchEventsList } from "../../lib/api";
-import { parseEventsQuery } from "../../lib/search";
-import { EventFilters } from "./EventFilters";
-import { EventCard } from "./EventCard";
-import { Skeleton } from "../common/Skeleton";
 import { useTranslations } from "../../lib/i18n/provider";
+import { parseEventsQuery } from "../../lib/search";
+import { Skeleton } from "../common/Skeleton";
+
+import { EventCard } from "./EventCard";
+import { EventFilters } from "./EventFilters";
+
+import type { EventListResponse, EventsQueryInput } from "../../lib/api";
 
 function EventListContent({ initialData, initialFilters }: { initialData: EventListResponse; initialFilters: EventsQueryInput }) {
   const searchParams = useSearchParams();

@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -12,6 +11,8 @@ import {
   defaultSiteDescription,
   defaultSiteTitle
 } from "../../../../lib/metadata";
+
+import type { Metadata } from "next";
 
 type JobDetailsParams = {
   params: Promise<{ locale: string; id: string }>;

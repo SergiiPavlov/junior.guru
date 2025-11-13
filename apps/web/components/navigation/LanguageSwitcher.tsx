@@ -1,9 +1,12 @@
 "use client";
 
-import { useLocale, useTranslations } from "../../lib/i18n/provider";
-import { locales, type Locale } from "../../lib/i18n/config";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
+
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import { locales, type Locale } from "../../lib/i18n/config";
+import { useLocale, useTranslations } from "../../lib/i18n/provider";
+
 
 function buildHref(locale: Locale, pathname: string, searchParams: URLSearchParams) {
   const queryString = searchParams.toString();

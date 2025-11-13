@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { JobsList } from "../../../components/jobs/JobsList";
@@ -7,6 +6,8 @@ import { isLocale } from "../../../lib/i18n/config";
 import { getTranslator } from "../../../lib/i18n/server";
 import { createPageMetadata, defaultMetadata } from "../../../lib/metadata";
 import { parseJobsQuery } from "../../../lib/search";
+
+import type { Metadata } from "next";
 
 type JobsPageParams = {
   params: Promise<{ locale: string }>;

@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 
-import type { EventListItem } from "../../lib/api";
-import { useLocale, useTranslations } from "../../lib/i18n/provider";
 import { formatDateRange } from "../../lib/format";
+import { useLocale, useTranslations } from "../../lib/i18n/provider";
+
+import type { EventListItem } from "../../lib/api";
 
 export function EventCard({ event }: { event: EventListItem }) {
   const locale = useLocale();

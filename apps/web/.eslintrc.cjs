@@ -47,7 +47,6 @@ module.exports = {
         alphabetize: { order: "asc", caseInsensitive: true }
       }
     ],
-    "import/no-unresolved": "off",
-    "max-lines-per-file": ["warn", { max: 400, skipBlankLines: true, skipComments: true }]
+    "import/no-unresolved": "off"
   }
 };

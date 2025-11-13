@@ -1,6 +1,7 @@
+import { locales, type Locale } from "./i18n/config";
+
 import type { Metadata } from "next";
 
-import { locales, type Locale } from "./i18n/config";
 
 const fallbackSiteUrl = "http://localhost:3000";
 export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? fallbackSiteUrl;

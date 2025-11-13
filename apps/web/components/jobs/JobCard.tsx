@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 
-import type { JobListItem } from "../../lib/api";
-import { useLocale, useTranslations } from "../../lib/i18n/provider";
 import { formatCurrency, formatDate } from "../../lib/format";
+import { useLocale, useTranslations } from "../../lib/i18n/provider";
+
+import type { JobListItem } from "../../lib/api";
 
 export function JobCard({ job }: { job: JobListItem }) {
   const locale = useLocale();
