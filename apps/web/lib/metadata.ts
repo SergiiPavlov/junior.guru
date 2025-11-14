@@ -1,6 +1,7 @@
+import { locales, type Locale } from "./i18n/config";
+
 import type { Metadata } from "next";
 
-import { locales, type Locale } from "./i18n/config";
 
 const fallbackSiteUrl = "http://localhost:3000";
 export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? fallbackSiteUrl;
@@ -20,7 +21,6 @@ const baseOpenGraph: NonNullable<Metadata["openGraph"]> = {
   description: defaultDescription,
   url: siteUrl,
   siteName: defaultTitle,
-  type: "website",
   locale: openGraphLocales.uk,
   images: [
     {
@@ -63,7 +63,7 @@ function buildLocalizedUrl(locale: Locale, normalizedPath: string): string {
   return new URL(relative, metadataBase).toString();
 }
 
-export function createLanguageAlternates(path: string, currentLocale: Locale): Metadata["alternates"] {
+export function createLanguageAlternates(path: string, currentLocale: Locale): NonNullable<Metadata["alternates"]> {
   const normalizedPath = normalizePath(path);
   const languages = Object.fromEntries(
     locales.map((locale) => [locale, buildLocalizedUrl(locale, normalizedPath)])
@@ -92,7 +92,7 @@ export function createPageMetadata({
   twitterOverrides?: Partial<Metadata["twitter"]>;
 }): Metadata {
   const alternates = createLanguageAlternates(path, locale);
-  const languages = (alternates.languages as Record<Locale, string>) ?? {};
+  const languages = (alternates.languages ?? {}) as Record<Locale, string>;
   const canonicalUrl = languages[locale] ?? buildLocalizedUrl(locale, normalizePath(path));
   const image = imageUrl ?? defaultOgImageUrl;
 
@@ -111,8 +111,7 @@ export function createPageMetadata({
           alt: title
         }
       ],
-    locale: openGraphLocales[locale],
-    type: openGraphOverrides?.type ?? baseOpenGraph.type
+    locale: openGraphLocales[locale]
   };
 
   const twitter: NonNullable<Metadata["twitter"]> = {

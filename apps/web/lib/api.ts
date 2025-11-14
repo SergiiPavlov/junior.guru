@@ -39,6 +39,7 @@ export type JobListItem = {
   skills: string[];
   tags: string[];
   description?: string;
+  sourceUrl?: string;
   urlOriginal?: string;
   urlApply?: string;
   publishedAt: string;
@@ -63,6 +64,7 @@ export type EventListItem = {
   skills: string[];
   tags: string[];
   description?: string;
+  sourceUrl?: string;
   urlOriginal?: string;
   urlRegister?: string;
   venue?: string;

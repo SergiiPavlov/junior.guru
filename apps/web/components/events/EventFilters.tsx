@@ -1,7 +1,8 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo, type FormEvent } from "react";
+
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { useTranslations } from "../../lib/i18n/provider";
 

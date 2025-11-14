@@ -86,6 +86,7 @@ function mapHitToJobItem(hit: JobSearchDocument) {
     skills: hit.skills ?? [],
     tags: hit.tags ?? [],
     description: hit.descriptionHtmlTrimmed,
+    sourceUrl: hit.sourceUrl ?? hit.urlOriginal,
     urlOriginal: hit.urlOriginal,
     urlApply: hit.urlApply,
     publishedAt: hit.postedAt,
@@ -95,8 +96,12 @@ function mapHitToJobItem(hit: JobSearchDocument) {
 
 export async function searchJobsInIndex(
   input: JobQueryInput,
-  client: MeiliHttpClient = meiliClient
+  client: MeiliHttpClient | null = meiliClient
 ): Promise<JobSearchResponse> {
+  if (!client) {
+    console.warn('Search disabled; returning empty jobs search result.');
+    return { items: [], total: 0 };
+  }
   const index = client.index<JobSearchDocument>(JOBS_INDEX);
   const sort = buildSort(input.sort);
   const filter = buildFilters(input);

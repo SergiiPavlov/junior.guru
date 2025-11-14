@@ -1,12 +1,13 @@
-import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
-import { Header } from "../../components/layout/Header";
+import { notFound } from "next/navigation";
+
+import { LocaleEffect } from "../../components/common/LocaleEffect";
 import { Footer } from "../../components/layout/Footer";
+import { Header } from "../../components/layout/Header";
+import { isLocale, locales, type Locale } from "../../lib/i18n/config";
 import { IntlProvider } from "../../lib/i18n/provider";
 import { getMessagesForLocale } from "../../lib/i18n/server";
-import { isLocale, locales, type Locale } from "../../lib/i18n/config";
-import { LocaleEffect } from "../../components/common/LocaleEffect";
 
 export async function generateStaticParams(): Promise<Array<{ locale: Locale }>> {
   return locales.map((locale) => ({ locale }));

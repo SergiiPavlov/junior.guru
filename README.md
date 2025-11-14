@@ -15,6 +15,14 @@
 3) Открой http://localhost:3000/uk — увидишь список тестовых вакансий.
    API слушает на http://localhost:8787/api/v1
 
+## Local dev (Windows + Linux)
+1) Скопируй `.env.example` → `.env.local` и при необходимости обнови `DATABASE_URL` под свою среду.
+2) Подними Postgres из Docker Compose или локально (по умолчанию используется порт `5432`).
+3) Установи зависимости один раз: `npm install`.
+4) Прогоняй миграции и сиды одной командой — `npm run db:migrate && npm run db:seed`.
+5) Для разработки запускай обе части стека одной командой, совместимой с Windows и Linux: `npm run all`.
+6) Проверь, что доступны http://localhost:3000/uk/jobs и http://localhost:3000/uk/events — страницы работают поверх API на http://localhost:8787.
+
 ## Postgres + Meilisearch + mock-воркеры
 1) Подними инфраструктуру через Docker Compose:
    ```bash
@@ -39,7 +47,7 @@
    ```bash
    docker compose -f ops/docker-compose.yml up -d meilisearch
    ```
-2) Скопируй `.env.example` → `.env.local` и пропиши `API_SEARCH_REINDEX_TOKEN=<секрет>`.
+2) Скопируй `.env.example` → `.env.local` и пропиши `API_ADMIN_TOKEN=<секрет>`.
 3) Выполни полную переиндексацию:
    ```bash
    npm run search:reindex
@@ -49,7 +57,7 @@
    ```bash
    curl "http://localhost:8787/api/v1/search/jobs?q=react"
    ```
-   Для повторной индексации через API отправь `POST /api/v1/jobs/reindex` с заголовком `Authorization: Bearer $API_SEARCH_REINDEX_TOKEN`.
+   Для повторной индексации через API отправь `POST /api/v1/jobs/reindex` с заголовком `x-admin-token: $API_ADMIN_TOKEN`.
 
 ## Структура
 - `apps/web` — Next.js 15 (App Router), базовые страницы `/[locale]`, `/[locale]/jobs`, `/[locale]/events`

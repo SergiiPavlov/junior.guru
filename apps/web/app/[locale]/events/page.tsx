@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { EventList } from "../../../components/events/EventList";
@@ -7,6 +6,8 @@ import { isLocale } from "../../../lib/i18n/config";
 import { getTranslator } from "../../../lib/i18n/server";
 import { createPageMetadata, defaultMetadata } from "../../../lib/metadata";
 import { parseEventsQuery } from "../../../lib/search";
+
+import type { Metadata } from "next";
 
 type EventsPageParams = {
   params: Promise<{ locale: string }>;

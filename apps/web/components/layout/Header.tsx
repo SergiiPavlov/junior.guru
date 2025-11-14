@@ -1,10 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { Suspense } from "react";
+
+import Link from "next/link";
+
+import { useLocale, useTranslations } from "../../lib/i18n/provider";
 import { LanguageSwitcher } from "../navigation/LanguageSwitcher";
-import { useTranslations } from "../../lib/i18n/provider";
-import { useLocale } from "../../lib/i18n/provider";
 
 export function Header() {
   const t = useTranslations("navigation");

@@ -26,9 +26,10 @@
     "format:web:write": "npm run -w @junior-ua/web format:write",
     "lint": "npx -y npm-run-all -p lint:web",
     "format": "npx -y npm-run-all -p format:web",
-    "all": "npm run dev"
+    "all": "npm run dev",
+    "test:e2e": "npx -y playwright test --config=playwright.config.ts"
   },
   "devDependencies": {
-    "npx -y npm-run-all": "^4.1.5"
+    "npm-run-all": "^4.1.5"
   }
 }

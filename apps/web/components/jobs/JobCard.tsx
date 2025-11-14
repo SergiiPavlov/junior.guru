@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 
-import type { JobListItem } from "../../lib/api";
-import { useLocale, useTranslations } from "../../lib/i18n/provider";
 import { formatCurrency, formatDate } from "../../lib/format";
+import { useLocale, useTranslations } from "../../lib/i18n/provider";
+
+import type { JobListItem } from "../../lib/api";
 
 export function JobCard({ job }: { job: JobListItem }) {
   const locale = useLocale();
@@ -28,6 +29,8 @@ export function JobCard({ job }: { job: JobListItem }) {
     return null;
   })();
 
+  const originalUrl = job.sourceUrl ?? job.urlOriginal ?? job.urlApply;
+
   return (
     <article className="card flex flex-col gap-3">
       <div className="text-sm text-gray-500">{job.companyName ?? "—"}</div>
@@ -44,9 +47,9 @@ export function JobCard({ job }: { job: JobListItem }) {
         >
           {t("openDetails")}
         </Link>
-        {job.urlOriginal && (
+        {originalUrl && (
           <a
-            href={job.urlOriginal}
+            href={originalUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex min-h-[44px] items-center rounded-full bg-black px-4 text-sm font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"

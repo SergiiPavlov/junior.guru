@@ -1,9 +1,9 @@
+import { defaultLocale } from "../lib/i18n/config";
+import { defaultMetadata } from "../lib/metadata";
+
 import type { Metadata } from "next";
 
 import "./globals.css";
-
-import { defaultLocale } from "../lib/i18n/config";
-import { defaultMetadata } from "../lib/metadata";
 
 export const metadata: Metadata = defaultMetadata;
 

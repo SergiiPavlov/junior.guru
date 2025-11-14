@@ -1,15 +1,18 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+
 import { useSearchParams } from "next/navigation";
 
-import type { JobListResponse, JobsQueryInput } from "../../lib/api";
 import { fetchJobsList } from "../../lib/api";
-import { parseJobsQuery } from "../../lib/search";
-import { JobsFilters } from "./JobsFilters";
-import { JobCard } from "./JobCard";
-import { Skeleton } from "../common/Skeleton";
 import { useTranslations } from "../../lib/i18n/provider";
+import { parseJobsQuery } from "../../lib/search";
+import { Skeleton } from "../common/Skeleton";
+
+import { JobCard } from "./JobCard";
+import { JobsFilters } from "./JobsFilters";
+
+import type { JobListResponse, JobsQueryInput } from "../../lib/api";
 
 function JobsListContent({ initialData, initialFilters }: { initialData: JobListResponse; initialFilters: JobsQueryInput }) {
   const searchParams = useSearchParams();

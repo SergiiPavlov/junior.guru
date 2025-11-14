@@ -1,5 +1,6 @@
-import { createTranslator } from "./translate";
 import { loadMessages } from "./messages";
+import { createTranslator } from "./translate";
+
 import type { Locale } from "./config";
 
 export async function getTranslator(locale: Locale, namespace?: string) {

@@ -75,6 +75,12 @@ class MeiliIndex<TDocument> {
       body: { q: query, ...params }
     });
   }
+
+  async getStats() {
+    return this.client.request<{ numberOfDocuments?: number }>(`/indexes/${this.name}/stats`, {
+      method: 'GET'
+    });
+  }
 }
 
 class MeiliHttpClient {
@@ -148,7 +154,11 @@ class MeiliHttpClient {
   }
 }
 
-export const meiliClient = new MeiliHttpClient(env.MEILI_HOST, env.MEILI_MASTER_KEY || undefined);
+export const isSearchEnabled = Boolean(env.API_SEARCH_ENABLED && env.MEILI_HOST);
+
+export const meiliClient = isSearchEnabled && env.MEILI_HOST
+  ? new MeiliHttpClient(env.MEILI_HOST, env.MEILI_MASTER_KEY || undefined)
+  : null;
 
 const JOBS_INDEX_SETTINGS: IndexSettings = {
   searchableAttributes: ['title', 'companyName', 'city', 'region', 'skills', 'tags', 'descriptionHtmlTrimmed'],
@@ -171,6 +181,11 @@ const EVENTS_INDEX_SETTINGS: IndexSettings = {
 };
 
 export async function ensureSearchIndexes() {
+  if (!meiliClient) {
+    console.warn('Meilisearch client is not configured; skipping index initialization.');
+    return;
+  }
+
   const jobs = await meiliClient.getOrCreateIndex(JOBS_INDEX, { primaryKey: 'id' });
   const events = await meiliClient.getOrCreateIndex(EVENTS_INDEX, { primaryKey: 'id' });
 

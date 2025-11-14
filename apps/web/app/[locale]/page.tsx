@@ -1,11 +1,12 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 
-import type { JobListResponse, JobsQueryInput } from "../../lib/api";
 import { fetchJobsList } from "../../lib/api";
-import { getTranslator } from "../../lib/i18n/server";
 import { isLocale } from "../../lib/i18n/config";
+import { getTranslator } from "../../lib/i18n/server";
 import { createPageMetadata, defaultMetadata } from "../../lib/metadata";
+
+import type { JobListResponse, JobsQueryInput } from "../../lib/api";
+import type { Metadata } from "next";
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;

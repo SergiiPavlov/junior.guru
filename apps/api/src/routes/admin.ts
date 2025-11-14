@@ -1,39 +1,66 @@
-import { Hono } from 'hono'
-import { env } from '../env'
-import { jobsIndex } from '../search/jobs-index'
-import { eventsIndex } from '../search/events-index'
-import { prisma } from '../lib/prisma'
-import { z } from '../lib/zod'
+import type { Context, Hono } from 'hono';
 
-export const admin = new Hono()
+import { env } from '../env';
+import { prisma } from '../lib/prisma';
+import { EVENTS_INDEX, JOBS_INDEX, isSearchEnabled, meiliClient } from '../search/client';
+import { reindexEvents } from '../search/events-index';
+import { reindexJobs } from '../search/jobs-index';
 
-// Simple admin guard via header x-admin-token
-admin.use('*', async (c, next) => {
-  const token = c.req.header('x-admin-token') || ''
-  if (env.ADMIN_TOKEN && token !== env.ADMIN_TOKEN) {
-    return c.json({ error: 'unauthorized' }, 401)
+function ensureAuthorized(context: Context) {
+  const token = context.req.header('x-admin-token') ?? '';
+  if (env.API_ADMIN_TOKEN && token !== env.API_ADMIN_TOKEN) {
+    return context.json({ error: 'forbidden' }, 403);
   }
-  await next()
-})
+  return null;
+}
 
-// POST /api/v1/admin/reindex/jobs
-admin.post('/reindex/jobs', async (c) => {
-  // Rebuild the jobs index from DB
-  const jobs = await prisma.job.findMany()
-  const { count } = await jobsIndex.reindexAll(jobs)
-  return c.json({ ok: true, count })
-})
+async function fetchIndexStats() {
+  if (!meiliClient) {
+    return { jobs: { documents: 0 }, events: { documents: 0 }, searchEnabled: false };
+  }
 
-// POST /api/v1/admin/reindex/events
-admin.post('/reindex/events', async (c) => {
-  const events = await prisma.event.findMany()
-  const { count } = await eventsIndex.reindexAll(events)
-  return c.json({ ok: true, count })
-})
+  const [jobs, events] = await Promise.all([
+    meiliClient.index(JOBS_INDEX).getStats(),
+    meiliClient.index(EVENTS_INDEX).getStats()
+  ]);
 
-// GET /api/v1/admin/stats
-admin.get('/stats', async (c) => {
-  const jobsCount = await jobsIndex.count()
-  const eventsCount = await eventsIndex.count()
-  return c.json({ jobs: { count: jobsCount }, events: { count: eventsCount } })
-})
+  return {
+    jobs: { documents: jobs.numberOfDocuments ?? 0 },
+    events: { documents: events.numberOfDocuments ?? 0 },
+    searchEnabled: isSearchEnabled
+  };
+}
+
+export function registerAdminRoutes(app: Hono) {
+  app.post('/jobs/reindex', async (context) => {
+    const forbidden = ensureAuthorized(context);
+    if (forbidden) {
+      return forbidden;
+    }
+
+    await reindexJobs(prisma);
+
+    return context.json({ ok: true });
+  });
+
+  app.post('/events/reindex', async (context) => {
+    const forbidden = ensureAuthorized(context);
+    if (forbidden) {
+      return forbidden;
+    }
+
+    await reindexEvents(prisma);
+
+    return context.json({ ok: true });
+  });
+
+  app.get('/admin/stats', async (context) => {
+    const forbidden = ensureAuthorized(context);
+    if (forbidden) {
+      return forbidden;
+    }
+
+    const stats = await fetchIndexStats();
+    return context.json(stats);
+  });
+}

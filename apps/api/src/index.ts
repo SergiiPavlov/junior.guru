@@ -5,10 +5,11 @@ import { logger } from 'hono/logger';
 import { env } from './env';
 import { createCors } from './middleware/cors';
 import { createRateLimit } from './middleware/rate-limit';
+import { registerAdminRoutes } from './routes/admin';
 import { registerEventRoutes } from './routes/events';
 import { registerJobRoutes } from './routes/jobs';
 import { registerSearchRoutes } from './routes/search';
-import { ensureSearchIndexes } from './search/client';
+import { ensureSearchIndexes, isSearchEnabled } from './search/client';
 
 const app = new Hono();
 
@@ -26,10 +27,19 @@ api.get('/health', (context) => context.json({ ok: true }));
 registerJobRoutes(api);
 registerEventRoutes(api);
 registerSearchRoutes(api);
+registerAdminRoutes(api);
 
-ensureSearchIndexes().catch((error) => {
-  console.error('Failed to initialize search indexes', error);
-});
+if (isSearchEnabled) {
+  void (async () => {
+    try {
+      await ensureSearchIndexes();
+    } catch (error) {
+      console.warn('Failed to initialize search indexes', error);
+    }
+  })();
+} else {
+  console.warn('Meilisearch indexing disabled or not configured; skipping index initialization.');
+}
 
 const port = env.PORT;
 console.log(`API running on http://localhost:${port}`);
