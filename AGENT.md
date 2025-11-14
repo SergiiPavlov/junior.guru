@@ -76,6 +76,14 @@ What is **missing** (to be delivered by PRs):
 }
 ```
 
+### Search (Meilisearch)
+- Local dev flow:
+  1. `docker compose -f ops/docker-compose.yml up -d meilisearch`
+  2. Copy `.env.example` → `.env.local` and ensure `MEILI_HOST`, `MEILI_MASTER_KEY`, `API_SEARCH_ENABLED` are set.
+  3. `npm run db:migrate && npm run db:seed`
+  4. `npm run search:reindex`
+  5. `npm run dev` — `/api/v1/search/jobs` will hit Meili; without env it falls back to Prisma.
+
 **Docker compose (`/ops/docker-compose.yml`)**
 - Services: `postgres:16`, `getmeili/meilisearch`, `redis` (optional). Ports: `5432/7700/6379`. Volumes enabled.
 
