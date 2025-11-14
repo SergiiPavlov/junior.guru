@@ -53,6 +53,7 @@ export default async function EventDetails({ params }: EventDetailsParams) {
     const event = await fetchEvent(id);
     const t = await getTranslator(locale, "event");
     const description = stripHtml(event.description) ?? event.title;
+    const originalUrl = event.sourceUrl ?? event.urlOriginal ?? event.urlRegister;
 
     const jsonLd = {
       "@context": "https://schema.org",
@@ -68,7 +69,7 @@ export default async function EventDetails({ params }: EventDetailsParams) {
       location: event.remote
         ? {
             "@type": "VirtualLocation",
-            url: event.urlRegister ?? event.urlOriginal
+            url: event.urlRegister ?? originalUrl
           }
         : {
             "@type": "Place",
@@ -104,9 +105,9 @@ export default async function EventDetails({ params }: EventDetailsParams) {
           />
         )}
         <div className="flex flex-wrap gap-3">
-          {event.urlOriginal && (
+          {originalUrl && (
             <a
-              href={event.urlOriginal}
+              href={originalUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex min-h-[44px] items-center rounded-full bg-black px-5 text-sm font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
@@ -114,7 +115,7 @@ export default async function EventDetails({ params }: EventDetailsParams) {
               {t("register")}
             </a>
           )}
-          {event.urlRegister && event.urlRegister !== event.urlOriginal && (
+          {event.urlRegister && event.urlRegister !== originalUrl && (
             <a
               href={event.urlRegister}
               target="_blank"

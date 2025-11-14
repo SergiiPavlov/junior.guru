@@ -108,6 +108,7 @@ function toJobDto(job: Job & { company: { name: string; slug: string } | null; r
     skills: job.skills ?? [],
     tags: job.tags ?? [],
     description: sanitizeHtml(job.description),
+    sourceUrl: job.urlOriginal ?? undefined,
     urlOriginal: job.urlOriginal ?? undefined,
     urlApply: job.urlApply ?? undefined,
     publishedAt: job.publishedAt.toISOString(),

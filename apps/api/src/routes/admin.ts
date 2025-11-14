@@ -2,7 +2,7 @@ import type { Context, Hono } from 'hono';
 
 import { env } from '../env';
 import { prisma } from '../lib/prisma';
-import { EVENTS_INDEX, JOBS_INDEX, meiliClient } from '../search/client';
+import { EVENTS_INDEX, JOBS_INDEX, isSearchEnabled, meiliClient } from '../search/client';
 import { reindexEvents } from '../search/events-index';
 import { reindexJobs } from '../search/jobs-index';
 
@@ -15,6 +15,10 @@ function ensureAuthorized(context: Context) {
 }
 
 async function fetchIndexStats() {
+  if (!meiliClient) {
+    return { jobs: { documents: 0 }, events: { documents: 0 }, searchEnabled: false };
+  }
+
   const [jobs, events] = await Promise.all([
     meiliClient.index(JOBS_INDEX).getStats(),
     meiliClient.index(EVENTS_INDEX).getStats()
@@ -22,7 +26,8 @@ async function fetchIndexStats() {
 
   return {
     jobs: { documents: jobs.numberOfDocuments ?? 0 },
-    events: { documents: events.numberOfDocuments ?? 0 }
+    events: { documents: events.numberOfDocuments ?? 0 },
+    searchEnabled: isSearchEnabled
   };
 }
 

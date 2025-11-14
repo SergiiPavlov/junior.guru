@@ -26,6 +26,7 @@ test('searchJobsInIndex builds filters and sorting parameters', async () => {
           skills: ['React'],
           tags: ['frontend'],
           descriptionHtmlTrimmed: 'Description',
+          sourceUrl: 'https://example.com',
           urlOriginal: 'https://example.com',
           urlApply: undefined,
           salaryMin: 2000,

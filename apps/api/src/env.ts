@@ -1,11 +1,11 @@
 import { ZodError, z } from './lib/zod';
 
-function parseBoolean(value: string | undefined, defaultValue: boolean): boolean {
+function parseBoolean(key: string, value: string | undefined, defaultValue: boolean): boolean {
   if (value === undefined) return defaultValue;
   const normalized = value.trim().toLowerCase();
   if (['false', '0', 'off', 'no'].includes(normalized)) return false;
   if (['true', '1', 'on', 'yes'].includes(normalized)) return true;
-  throw new ZodError([{ path: ['API_RATE_LIMIT_ENABLED'], message: `Invalid boolean value: ${value}` }]);
+  throw new ZodError([{ path: [key], message: `Invalid boolean value: ${value}` }]);
 }
 
 const envSchema = z.object({
@@ -27,14 +27,15 @@ const envSchema = z.object({
   API_RATE_LIMIT_ENABLED: z
     .string()
     .optional()
-    .transform((value) => parseBoolean(value, true)),
+    .transform((value) => parseBoolean('API_RATE_LIMIT_ENABLED', value, true)),
   API_RATE_LIMIT_MAX: z.coerce.number().int().min(1).default(60),
   API_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().min(1000).default(60_000),
   MEILI_HOST: z
     .string()
     .optional()
-    .transform((value) => value ?? 'http://localhost:7700')
+    .transform((value) => value?.trim() || undefined)
     .refine((value) => {
+      if (!value) return true;
       try {
         // eslint-disable-next-line no-new
         new URL(value);
@@ -42,8 +43,12 @@ const envSchema = z.object({
       } catch {
         return false;
       }
-    }, 'MEILI_HOST must be a valid URL'),
+    }, 'MEILI_HOST must be a valid URL when provided'),
   MEILI_MASTER_KEY: z.string().optional().default(''),
+  API_SEARCH_ENABLED: z
+    .string()
+    .optional()
+    .transform((value) => parseBoolean('API_SEARCH_ENABLED', value, true)),
   API_ADMIN_TOKEN: z.string().optional().default('')
 });
 

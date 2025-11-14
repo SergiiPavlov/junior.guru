@@ -19,6 +19,7 @@ export type EventSearchDocument = {
   skills: string[];
   tags: string[];
   descriptionHtmlTrimmed?: string;
+  sourceUrl?: string;
   urlOriginal?: string;
   urlRegister?: string;
   venue?: string;
@@ -67,6 +68,7 @@ export function mapEventToSearchDocument(event: EventWithRelations): EventSearch
     skills: event.skills ?? [],
     tags: event.tags ?? [],
     descriptionHtmlTrimmed: trimDescription(event.description ?? event.descriptionRaw ?? undefined),
+    sourceUrl: event.urlOriginal ?? undefined,
     urlOriginal: event.urlOriginal ?? undefined,
     urlRegister: event.urlRegister ?? undefined,
     venue: event.venue ?? undefined,
@@ -80,6 +82,10 @@ export function mapEventToSearchDocument(event: EventWithRelations): EventSearch
 }
 
 export async function upsertEventDocument(prisma: PrismaClient, id: string) {
+  if (!meiliClient) {
+    console.warn('Search disabled; skipping event document upsert.');
+    return;
+  }
   const event = await prisma.event.findUnique({
     where: { id },
     include: { region: true }
@@ -95,6 +101,9 @@ export async function upsertEventDocument(prisma: PrismaClient, id: string) {
 }
 
 export async function removeEventDocument(id: string) {
+  if (!meiliClient) {
+    return;
+  }
   try {
     await meiliClient.index(EVENTS_INDEX).deleteDocument(id);
   } catch (error) {
@@ -106,6 +115,10 @@ export async function removeEventDocument(id: string) {
 }
 
 export async function reindexEvents(prisma: PrismaClient) {
+  if (!meiliClient) {
+    console.warn('Search disabled; skipping full events reindex.');
+    return;
+  }
   const events = await prisma.event.findMany({
     include: { region: true }
   });

@@ -22,6 +22,7 @@ export type JobSearchDocument = {
   skills: string[];
   tags: string[];
   descriptionHtmlTrimmed?: string;
+  sourceUrl?: string;
   urlOriginal?: string;
   urlApply?: string;
   salaryMin?: number;
@@ -74,6 +75,7 @@ export function mapJobToSearchDocument(job: JobWithRelations): JobSearchDocument
     skills: job.skills ?? [],
     tags: job.tags ?? [],
     descriptionHtmlTrimmed: trimDescription(job.description ?? job.descriptionRaw ?? undefined),
+    sourceUrl: job.urlOriginal ?? undefined,
     urlOriginal: job.urlOriginal ?? undefined,
     urlApply: job.urlApply ?? undefined,
     salaryMin: salaryFilterBase ?? undefined,
@@ -94,6 +96,10 @@ export async function fetchJobForIndex(prisma: PrismaClient, id: string) {
 }
 
 export async function upsertJobDocument(prisma: PrismaClient, id: string) {
+  if (!meiliClient) {
+    console.warn('Search disabled; skipping job document upsert.');
+    return;
+  }
   const job = await fetchJobForIndex(prisma, id);
 
   if (!job) {
@@ -106,6 +112,9 @@ export async function upsertJobDocument(prisma: PrismaClient, id: string) {
 }
 
 export async function removeJobDocument(id: string) {
+  if (!meiliClient) {
+    return;
+  }
   try {
     await meiliClient.index(JOBS_INDEX).deleteDocument(id);
   } catch (error) {
@@ -117,6 +126,10 @@ export async function removeJobDocument(id: string) {
 }
 
 export async function reindexJobs(prisma: PrismaClient) {
+  if (!meiliClient) {
+    console.warn('Search disabled; skipping full jobs reindex.');
+    return;
+  }
   const jobs = await prisma.job.findMany({
     include: { company: true, region: true }
   });

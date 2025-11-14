@@ -58,6 +58,7 @@ export default async function JobDetails({ params }: JobDetailsParams) {
     const job = await fetchJob(id);
     const t = await getTranslator(locale, "job");
     const description = stripHtml(job.description) ?? job.title;
+    const originalUrl = job.sourceUrl ?? job.urlOriginal ?? job.urlApply;
 
     const salary = (() => {
       if (!job.currency) return null;
@@ -139,9 +140,9 @@ export default async function JobDetails({ params }: JobDetailsParams) {
           />
         )}
         <div className="flex flex-wrap gap-3">
-          {job.urlOriginal && (
+          {originalUrl && (
             <a
-              href={job.urlOriginal}
+              href={originalUrl}
               className="inline-flex min-h-[44px] items-center rounded-full bg-black px-5 text-sm font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
               target="_blank"
               rel="noopener noreferrer"
