@@ -1,4 +1,4 @@
-import { z } from '../lib/zod';
+import { z } from '../lib/zod.js';
 
 const csvArraySchema = z.preprocess((value) => {
   if (typeof value === 'string') {
@@ -19,7 +19,10 @@ const jobQuerySchema = z.object({
   q: z.string().optional(),
   city: z.string().optional(),
   region: z.string().optional(),
-  remote: z.enum(['true', 'false']).optional().transform((value) => (value === undefined ? undefined : value === 'true')),
+  remote: z
+    .enum(['true', 'false'])
+    .optional()
+    .transform((value: string | undefined) => (value === undefined ? undefined : value === 'true')),
   skills: csvArraySchema,
   tags: csvArraySchema,
   salaryMin: z.coerce.number().min(0).optional(),

@@ -1,10 +1,10 @@
 import type { Context, Hono } from 'hono';
 
-import { env } from '../env';
-import { prisma } from '../lib/prisma';
-import { EVENTS_INDEX, JOBS_INDEX, isSearchEnabled, meiliClient } from '../search/client';
-import { reindexEvents } from '../search/events-index';
-import { reindexJobs } from '../search/jobs-index';
+import { env } from '../env.js';
+import { prisma } from '../lib/prisma.js';
+import { EVENTS_INDEX, JOBS_INDEX, isSearchEnabled, meiliClient } from '../search/client.js';
+import { reindexEvents } from '../search/events-index.js';
+import { reindexJobs } from '../search/jobs-index.js';
 
 function ensureAuthorized(context: Context) {
   const token = context.req.header('x-admin-token') ?? '';

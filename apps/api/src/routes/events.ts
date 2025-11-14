@@ -1,9 +1,9 @@
 import type { Event, Prisma } from '@prisma/client';
 import type { Hono } from 'hono';
 
-import { prisma } from '../lib/prisma';
-import { sanitizeHtml } from '../lib/sanitize-html';
-import { ZodError, z } from '../lib/zod';
+import { prisma } from '../lib/prisma.js';
+import { sanitizeHtml } from '../lib/sanitize-html.js';
+import { ZodError, z } from '../lib/zod.js';
 
 const csvArraySchema = z.preprocess((value) => {
   if (typeof value === 'string') {
@@ -201,7 +201,7 @@ export function registerEventRoutes(app: Hono) {
         total: result.total
       });
       return context.json(response);
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ZodError) {
         return context.json({ error: 'Invalid query', details: error.issues }, 400);
       }
@@ -222,7 +222,7 @@ export function registerEventRoutes(app: Hono) {
       }
 
       return context.json(toEventDto(event));
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ZodError) {
         return context.json({ error: 'Invalid request', details: error.issues }, 400);
       }

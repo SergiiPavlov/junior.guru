@@ -1,6 +1,6 @@
 import { setTimeout as delay } from 'node:timers/promises';
 
-import { env } from '../env';
+import { env } from '../env.js';
 
 export const JOBS_INDEX = 'jobs';
 export const EVENTS_INDEX = 'events';

@@ -1,15 +1,15 @@
 import type { Hono } from 'hono';
 
-import { ZodError } from '../lib/zod';
-import { jobListResponseSchema, jobQuerySchema } from './job-schemas';
-import { searchJobsInIndex } from '../search/jobs-service';
+import { ZodError } from '../lib/zod.js';
+import { jobListResponseSchema, jobQuerySchema } from './job-schemas.js';
+import { searchJobsInIndex } from '../search/jobs-service.js';
 
 type SearchDependencies = {
   searchJobs: typeof searchJobsInIndex;
 };
 
 const defaultDependencies: SearchDependencies = {
-  searchJobs: (input) => searchJobsInIndex(input)
+  searchJobs: searchJobsInIndex
 };
 
 export function registerSearchRoutes(app: Hono, deps: SearchDependencies = defaultDependencies) {
@@ -24,7 +24,7 @@ export function registerSearchRoutes(app: Hono, deps: SearchDependencies = defau
         total: result.total
       });
       return context.json(response);
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ZodError) {
         return context.json({ error: 'Invalid query', details: error.issues }, 400);
       }

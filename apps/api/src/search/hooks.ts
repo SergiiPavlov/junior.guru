@@ -1,7 +1,7 @@
 import type { Prisma, PrismaClient } from '@prisma/client';
 
-import { reindexEvents, removeEventDocument, upsertEventDocument } from './events-index';
-import { reindexJobs, removeJobDocument, upsertJobDocument } from './jobs-index';
+import { reindexEvents, removeEventDocument, upsertEventDocument } from './events-index.js';
+import { reindexJobs, removeJobDocument, upsertJobDocument } from './jobs-index.js';
 
 const WRITE_ACTIONS = new Set(['create', 'update', 'upsert']);
 const BULK_ACTIONS = new Set(['createMany', 'updateMany']);
