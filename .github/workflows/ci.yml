@@ -32,7 +32,10 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run -w @junior-ua/api prisma:generate
-      - run: npm run build
+      - name: Build API
+        run: npm run -w @junior-ua/api build
+      - name: Build Web
+        run: CI=1 npm run -w @junior-ua/web build
       - name: Upload build artifacts
         if: always()
         uses: actions/upload-artifact@v4
