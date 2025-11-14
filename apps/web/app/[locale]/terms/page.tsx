@@ -1,0 +1,50 @@
+import { isLocale } from "../../../lib/i18n/config";
+import { getTranslator } from "../../../lib/i18n/server";
+import { createPageMetadata, defaultMetadata } from "../../../lib/metadata";
+
+import type { Metadata } from "next";
+
+type TermsPageProps = {
+  params: Promise<{ locale: string }>;
+};
+
+export async function generateMetadata({ params }: TermsPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) {
+    return defaultMetadata;
+  }
+  const [tPage, tMeta] = await Promise.all([
+    getTranslator(locale, "terms"),
+    getTranslator(locale, "meta")
+  ]);
+  return createPageMetadata({
+    locale,
+    path: "/terms",
+    title: tPage("title"),
+    description: tMeta("description")
+  });
+}
+
+export default async function TermsPage({ params }: TermsPageProps) {
+  const { locale } = await params;
+  if (!isLocale(locale)) {
+    throw new Error("Unsupported locale");
+  }
+  const t = await getTranslator(locale, "terms");
+  return (
+    <article className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+      <header className="space-y-2">
+        <h1 className="text-3xl font-semibold">{t("title")}</h1>
+        <p className="text-lg text-gray-600">{t("intro")}</p>
+      </header>
+      <section className="space-y-2">
+        <h2 className="text-2xl font-semibold">{t("usageSectionTitle")}</h2>
+        <p>{t("usageSectionBody")}</p>
+      </section>
+      <section className="space-y-2">
+        <h2 className="text-2xl font-semibold">{t("liabilitySectionTitle")}</h2>
+        <p>{t("liabilitySectionBody")}</p>
+      </section>
+    </article>
+  );
+}

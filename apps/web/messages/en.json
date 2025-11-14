@@ -94,5 +94,29 @@
     "back": "← Back to events",
     "register": "Open original",
     "notFound": "Event not found."
+  },
+  "about": {
+    "title": "About Junior UA",
+    "intro": "Junior UA connects juniors in Ukraine with curated jobs, events, and a community that wants them to grow.",
+    "sectionMissionTitle": "Our mission",
+    "sectionMissionBody": "We collect transparent opportunities, highlight supportive teams, and give early-career talent confidence that every listing was reviewed by humans.",
+    "sectionAudienceTitle": "Who we build for",
+    "sectionAudienceBody": "Students, career switchers, and first-job hunters who need a single trustworthy feed of openings, meetups, and learning moments across Ukraine."
+  },
+  "privacy": {
+    "title": "Privacy",
+    "intro": "We keep the product simple and only store data that helps us operate the site and measure interest.",
+    "dataSectionTitle": "Data we process",
+    "dataSectionBody": "When you browse the site we log basic analytics, crash reports, and any content you send us such as job tips or event forms.",
+    "cookiesSectionTitle": "Cookies and storage",
+    "cookiesSectionBody": "We use minimal cookies/local storage to remember your language and detect abuse. Third-party tracking scripts are opt-in and disabled by default."
+  },
+  "terms": {
+    "title": "Terms of use",
+    "intro": "By using Junior UA you agree to be respectful, share accurate information, and not misuse the platform.",
+    "usageSectionTitle": "Fair use",
+    "usageSectionBody": "Listings are provided for personal career exploration. Do not scrape, spam, or resell the data without permission.",
+    "liabilitySectionTitle": "Disclaimer",
+    "liabilitySectionBody": "Junior UA curates content but cannot guarantee completeness. Always double-check details with the original organizer or employer."
   }
 }
