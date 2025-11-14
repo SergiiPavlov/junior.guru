@@ -1,13 +1,5 @@
 import type { Locale } from "./i18n/config";
 
-export function formatCurrency(locale: Locale, value: number, currency: string) {
-  return new Intl.NumberFormat(locale === "uk" ? "uk-UA" : "en-US", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0
-  }).format(value);
-}
-
 export function formatDateTime(locale: Locale, value: string | Date, options?: Intl.DateTimeFormatOptions) {
   const date = typeof value === "string" ? new Date(value) : value;
   return new Intl.DateTimeFormat(locale === "uk" ? "uk-UA" : "en-GB", {

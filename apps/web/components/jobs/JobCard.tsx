@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 
-import { formatCurrency, formatDate } from "../../lib/format";
+import { formatDate } from "../../lib/format";
+import { formatUAH } from "../../lib/formatCurrency";
 import { useLocale, useTranslations } from "../../lib/i18n/provider";
 
 import type { JobListItem } from "../../lib/api";
@@ -15,14 +16,14 @@ export function JobCard({ job }: { job: JobListItem }) {
     if (!job.currency) return null;
     if (job.salaryMin && job.salaryMax) {
       return t("salary", {
-        min: formatCurrency(locale, job.salaryMin, job.currency),
-        max: formatCurrency(locale, job.salaryMax, job.currency),
+        min: formatUAH(job.salaryMin, locale),
+        max: formatUAH(job.salaryMax, locale),
         currency: job.currency
       });
     }
     if (job.salaryMin) {
       return t("salaryFrom", {
-        min: formatCurrency(locale, job.salaryMin, job.currency),
+        min: formatUAH(job.salaryMin, locale),
         currency: job.currency
       });
     }
@@ -30,6 +31,7 @@ export function JobCard({ job }: { job: JobListItem }) {
   })();
 
   const originalUrl = job.sourceUrl ?? job.urlOriginal ?? job.urlApply;
+  const canOpenOriginal = isValidOriginalUrl(originalUrl);
 
   return (
     <article className="card flex flex-col gap-3">
@@ -47,7 +49,7 @@ export function JobCard({ job }: { job: JobListItem }) {
         >
           {t("openDetails")}
         </Link>
-        {originalUrl && (
+        {canOpenOriginal && originalUrl && (
           <a
             href={originalUrl}
             target="_blank"
@@ -60,4 +62,22 @@ export function JobCard({ job }: { job: JobListItem }) {
       </div>
     </article>
   );
+}
+
+function isValidOriginalUrl(url?: string | null) {
+  if (!url) {
+    return false;
+  }
+  try {
+    const parsed = new URL(url);
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return false;
+    }
+    if (parsed.hostname === "jobs.example") {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
 }

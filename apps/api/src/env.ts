@@ -48,8 +48,8 @@ const envSchema = z.object({
   API_SEARCH_ENABLED: z
     .string()
     .optional()
-    .transform((value) => parseBoolean('API_SEARCH_ENABLED', value, true)),
-  API_ADMIN_TOKEN: z.string().optional().default('')
+    .transform((value) => parseBoolean('API_SEARCH_ENABLED', value, false)),
+  API_SEARCH_REINDEX_TOKEN: z.string().optional().default('')
 });
 
 const parsed = envSchema.parse(process.env as Record<string, unknown>);

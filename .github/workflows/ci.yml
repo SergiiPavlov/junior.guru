@@ -47,7 +47,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/junior_ua?schema=public
-      NEXT_PUBLIC_API_BASE: http://localhost:8787/api/v1
+      NEXT_PUBLIC_API_BASE: http://localhost:8787
+      API_SEARCH_ENABLED: "true"
+      MEILI_HOST: http://localhost:7700
+      API_SEARCH_REINDEX_TOKEN: ci-reindex
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -55,26 +58,43 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
-      - name: Start infra (postgres, meili, redis)
-        run: docker compose -f ops/docker-compose.yml up -d
-      - name: Configure Prisma env
+      # Поднять внешние зависимости (Postgres + Meili + Redis если есть)
+      - name: Start deps
         run: |
-          mkdir -p packages/db/prisma
-          cat <<EOF > packages/db/prisma/.env
-          DATABASE_URL=${DATABASE_URL}
+          docker compose -f ops/docker-compose.yml up -d
+          npx wait-on -t 60000 http://localhost:7700 || (docker ps && docker logs $(docker ps -q --filter "name=meilisearch") && exit 1)
+
+      # Сформировать .env.local так, как ждут API и Web
+      - name: Prepare env
+        run: |
+          cat > .env.local <<'EOF'
+          NODE_ENV=production
+          NEXT_PUBLIC_SITE_URL=http://localhost:3000
+          NEXT_PUBLIC_API_BASE=http://localhost:8787
+          PORT=8787
+          API_RATE_LIMIT_ENABLED=false
+          # DB (для API/Prisma)
+          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/junior_ua?schema=public
+          # Поиск
+          API_SEARCH_ENABLED=true
+          MEILI_HOST=http://localhost:7700
+          MEILI_API_KEY=masterKey
+          API_SEARCH_REINDEX_TOKEN=ci-reindex
           EOF
-      - name: Wait for services
-        run: npx wait-on -t 120000 tcp:localhost:5432 tcp:localhost:7700
-      - name: Prepare database
+
+      - name: DB migrate + seed
         run: |
           npm run db:migrate
           npm run db:seed
-      - name: Build app
+
+      - name: Build
         run: npm run build
+
       - name: Start app
-        run: |
-          nohup npm run start >/dev/null 2>&1 &
-          npx wait-on -t 120000 http://localhost:8787 http://localhost:3000
+        run: nohup npm run start >/dev/null 2>&1 &
+      - name: Wait for services
+        run: npx wait-on -t 180000 http://localhost:8787 http://localhost:3000
+
       - name: Install Playwright
         run: npx playwright install --with-deps
       - name: Run E2E

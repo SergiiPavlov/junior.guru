@@ -154,7 +154,8 @@ class MeiliHttpClient {
   }
 }
 
-export const isSearchEnabled = Boolean(env.API_SEARCH_ENABLED && env.MEILI_HOST);
+const hasMeiliHost = Boolean(env.MEILI_HOST);
+export const isSearchEnabled = env.API_SEARCH_ENABLED && hasMeiliHost;
 
 export const meiliClient = isSearchEnabled && env.MEILI_HOST
   ? new MeiliHttpClient(env.MEILI_HOST, env.MEILI_MASTER_KEY || undefined)

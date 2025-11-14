@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { fetchJob } from "../../../../lib/api";
-import { formatCurrency, formatDate, stripHtml } from "../../../../lib/format";
+import { formatDate, stripHtml } from "../../../../lib/format";
+import { formatUAH } from "../../../../lib/formatCurrency";
 import { isLocale } from "../../../../lib/i18n/config";
 import { getTranslator } from "../../../../lib/i18n/server";
 import {
@@ -63,10 +64,10 @@ export default async function JobDetails({ params }: JobDetailsParams) {
     const salary = (() => {
       if (!job.currency) return null;
       if (job.salaryMin && job.salaryMax) {
-        return `${formatCurrency(locale, job.salaryMin, job.currency)} – ${formatCurrency(locale, job.salaryMax, job.currency)}`;
+        return `${formatUAH(job.salaryMin, locale)} – ${formatUAH(job.salaryMax, locale)}`;
       }
       if (job.salaryMin) {
-        return formatCurrency(locale, job.salaryMin, job.currency);
+        return formatUAH(job.salaryMin, locale);
       }
       return null;
     })();

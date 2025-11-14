@@ -9,13 +9,13 @@
   "scripts": {
     "dev:web": "npm run -w @junior-ua/web dev",
     "dev:api": "npm run -w @junior-ua/api dev",
-    "dev": "npx -y npm-run-all -p dev:api dev:web",
+    "dev": "npm-run-all -p dev:api dev:web",
     "build:web": "npm run -w @junior-ua/web build",
     "build:api": "npm run -w @junior-ua/api build",
-    "build": "npx -y npm-run-all -s build:api build:web",
+    "build": "npm-run-all -s build:api build:web",
     "start:web": "npm run -w @junior-ua/web start",
     "start:api": "npm run -w @junior-ua/api start",
-    "start": "npx -y npm-run-all -p start:api start:web",
+    "start": "npm-run-all -p start:api start:web",
     "db:migrate": "npm run -w @junior-ua/api db:migrate",
     "db:seed": "npm run -w @junior-ua/api db:seed",
     "search:reindex": "npm run -w @junior-ua/api search:reindex",
@@ -24,12 +24,14 @@
     "lint:web": "npm run -w @junior-ua/web lint",
     "format:web": "npm run -w @junior-ua/web format",
     "format:web:write": "npm run -w @junior-ua/web format:write",
-    "lint": "npx -y npm-run-all -p lint:web",
-    "format": "npx -y npm-run-all -p format:web",
+    "lint": "npm-run-all -p lint:web",
+    "format": "npm-run-all -p format:web",
     "all": "npm run dev",
     "test:e2e": "npx -y playwright test --config=playwright.config.ts"
   },
   "devDependencies": {
-    "npm-run-all": "^4.1.5"
+    "cross-env": "^7.0.3",
+    "npm-run-all": "^4.1.5",
+    "wait-on": "^7.2.0"
   }
 }

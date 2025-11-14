@@ -1,11 +1,17 @@
 import type { Locale } from "./i18n/config";
 
-const DEFAULT_API_BASE = "http://localhost:8787/api/v1";
+const DEFAULT_API_BASE = "http://localhost:8787";
+const API_VERSION_PATH = "api/v1/";
 
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? DEFAULT_API_BASE;
 
-function buildUrl(path: string, params?: Record<string, string | undefined | string[]>) {
-  const url = new URL(path, API_BASE.endsWith("/") ? API_BASE : `${API_BASE}/`);
+export function buildApiUrl(path: string, params?: Record<string, string | undefined | string[]>) {
+  const rawPath = path.replace(/^\/+/, "");
+  const baseWithSlash = API_BASE.endsWith("/") ? API_BASE : `${API_BASE}/`;
+  const baseUrl = new URL(baseWithSlash);
+  const hasApiPrefix = /\/api\//.test(baseUrl.pathname);
+  const versionedBase = hasApiPrefix ? baseWithSlash : new URL(API_VERSION_PATH, baseUrl).toString();
+  const url = new URL(rawPath, versionedBase.endsWith("/") ? versionedBase : `${versionedBase}/`);
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       if (value === undefined || value === null) {
@@ -159,24 +165,24 @@ async function fetchJson<T>(url: URL, init?: RequestInit): Promise<T> {
 
 export async function fetchJobsList(input: JobsQueryInput, options?: { revalidate?: number; signal?: AbortSignal }) {
   const endpoint = input.q ? "search/jobs" : "jobs";
-  const url = buildUrl(endpoint, serializeJobsQuery(input));
+  const url = buildApiUrl(endpoint, serializeJobsQuery(input));
   const init = options?.revalidate ? { next: { revalidate: options.revalidate } } : undefined;
   return fetchJson<JobListResponse>(url, { ...init, signal: options?.signal });
 }
 
 export async function fetchJob(id: string) {
-  const url = buildUrl(`jobs/${id}`);
+  const url = buildApiUrl(`jobs/${id}`);
   return fetchJson<JobListItem>(url);
 }
 
 export async function fetchEventsList(input: EventsQueryInput, options?: { revalidate?: number; signal?: AbortSignal }) {
-  const url = buildUrl("events", serializeEventsQuery(input));
+  const url = buildApiUrl("events", serializeEventsQuery(input));
   const init = options?.revalidate ? { next: { revalidate: options.revalidate } } : undefined;
   return fetchJson<EventListResponse>(url, { ...init, signal: options?.signal });
 }
 
 export async function fetchEvent(id: string) {
-  const url = buildUrl(`events/${id}`);
+  const url = buildApiUrl(`events/${id}`);
   return fetchJson<EventListItem>(url);
 }
 

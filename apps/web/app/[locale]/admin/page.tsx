@@ -1,8 +1,7 @@
 import { cookies } from "next/headers";
 
 import { AdminPanel } from "../../../components/admin/AdminPanel";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8787/api/v1";
+import { buildApiUrl } from "../../../lib/api";
 
 type AdminStats = Record<string, unknown> | null;
 
@@ -12,7 +11,7 @@ async function fetchStats(token: string): Promise<AdminStats> {
     if (token) {
       headers["x-admin-token"] = token;
     }
-    const response = await fetch(new URL("/admin/stats", API_BASE), {
+    const response = await fetch(buildApiUrl("admin/stats"), {
       headers,
       cache: "no-store"
     });

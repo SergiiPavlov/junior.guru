@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const API = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8787/api/v1'
+import { buildApiUrl } from '../../../../lib/api'
 
 export async function GET(req: NextRequest) {
   const token = req.cookies.get('admin-token')?.value || ''
@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   if (token) {
     headers['x-admin-token'] = token
   }
-  const resp = await fetch(new URL('/admin/stats', API), {
+  const resp = await fetch(buildApiUrl('admin/stats'), {
     headers
   })
   const data = await resp.json().catch(() => ({}))

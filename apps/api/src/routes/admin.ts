@@ -8,7 +8,7 @@ import { reindexJobs } from '../search/jobs-index';
 
 function ensureAuthorized(context: Context) {
   const token = context.req.header('x-admin-token') ?? '';
-  if (env.API_ADMIN_TOKEN && token !== env.API_ADMIN_TOKEN) {
+  if (env.API_SEARCH_REINDEX_TOKEN && token !== env.API_SEARCH_REINDEX_TOKEN) {
     return context.json({ error: 'forbidden' }, 403);
   }
   return null;
