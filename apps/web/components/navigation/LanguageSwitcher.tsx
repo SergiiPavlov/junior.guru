@@ -9,9 +9,13 @@ import { useLocale, useTranslations } from "../../lib/i18n/provider";
 
 
 function buildHref(locale: Locale, pathname: string, searchParams: URLSearchParams) {
+  const normalizedPath = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  const localePattern = new RegExp(`^/(${locales.join("|")})(?=/|$)`);
+  const pathWithoutLocale = normalizedPath.replace(localePattern, "") || "/";
+  const cleanPath = pathWithoutLocale === "/" ? "" : pathWithoutLocale;
   const queryString = searchParams.toString();
-  const basePath = pathname.startsWith("/") ? pathname : `/${pathname}`;
-  return queryString ? `/${locale}${basePath}?${queryString}` : `/${locale}${basePath}`;
+  const href = `/${locale}${cleanPath}`;
+  return queryString ? `${href}?${queryString}` : href;
 }
 
 export function LanguageSwitcher() {

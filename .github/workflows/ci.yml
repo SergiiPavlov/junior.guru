@@ -73,8 +73,13 @@ jobs:
         run: npm run build
       - name: Start app
         run: |
-          nohup npm run start >/dev/null 2>&1 &
+          nohup npm run start > app.log 2>&1 &
           npx wait-on -t 120000 http://localhost:8787 http://localhost:3000
+      - name: Print app logs on failure
+        if: failure()
+        run: |
+          echo "===== app.log ====="
+          cat app.log || echo "no app.log"
       - name: Install Playwright
         run: npx playwright install --with-deps
       - name: Run E2E
