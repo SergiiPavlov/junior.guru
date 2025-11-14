@@ -1,4 +1,4 @@
-import { ZodError, z } from './lib/zod';
+import { ZodError, z } from './lib/zod.js';
 
 function parseBoolean(key: string, value: string | undefined, defaultValue: boolean): boolean {
   if (value === undefined) return defaultValue;
@@ -14,8 +14,8 @@ const envSchema = z.object({
   NEXT_PUBLIC_SITE_URL: z
     .string()
     .optional()
-    .transform((value) => value ?? 'http://localhost:3000')
-    .refine((value) => {
+    .transform((value: string | undefined) => value ?? 'http://localhost:3000')
+    .refine((value: string) => {
       try {
         // eslint-disable-next-line no-new
         new URL(value);
@@ -27,14 +27,14 @@ const envSchema = z.object({
   API_RATE_LIMIT_ENABLED: z
     .string()
     .optional()
-    .transform((value) => parseBoolean('API_RATE_LIMIT_ENABLED', value, true)),
+    .transform((value: string | undefined) => parseBoolean('API_RATE_LIMIT_ENABLED', value, true)),
   API_RATE_LIMIT_MAX: z.coerce.number().int().min(1).default(60),
   API_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().min(1000).default(60_000),
   MEILI_HOST: z
     .string()
     .optional()
-    .transform((value) => value?.trim() || undefined)
-    .refine((value) => {
+    .transform((value: string | undefined) => value?.trim() || undefined)
+    .refine((value: string | undefined) => {
       if (!value) return true;
       try {
         // eslint-disable-next-line no-new
@@ -48,7 +48,7 @@ const envSchema = z.object({
   API_SEARCH_ENABLED: z
     .string()
     .optional()
-    .transform((value) => parseBoolean('API_SEARCH_ENABLED', value, true)),
+    .transform((value: string | undefined) => parseBoolean('API_SEARCH_ENABLED', value, true)),
   API_ADMIN_TOKEN: z.string().optional().default('')
 });
 

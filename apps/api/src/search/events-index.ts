@@ -1,7 +1,7 @@
 import type { Event, PrismaClient, Region } from '@prisma/client';
 
-import { sanitizeHtml } from '../lib/sanitize-html';
-import { EVENTS_INDEX, MeiliHttpError, meiliClient } from './client';
+import { sanitizeHtml } from '../lib/sanitize-html.js';
+import { EVENTS_INDEX, MeiliHttpError, meiliClient } from './client.js';
 
 const DESCRIPTION_LIMIT = 400;
 
@@ -106,7 +106,7 @@ export async function removeEventDocument(id: string) {
   }
   try {
     await meiliClient.index(EVENTS_INDEX).deleteDocument(id);
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof MeiliHttpError && error.status === 404) {
       return;
     }

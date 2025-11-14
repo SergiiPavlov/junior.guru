@@ -1,12 +1,12 @@
 import type { Job, Prisma } from '@prisma/client';
 import type { Hono } from 'hono';
 
-import { prisma } from '../lib/prisma';
-import { sanitizeHtml } from '../lib/sanitize-html';
-import { ZodError } from '../lib/zod';
-import { jobItemSchema, jobListResponseSchema, jobQuerySchema } from './job-schemas';
+import { prisma } from '../lib/prisma.js';
+import { sanitizeHtml } from '../lib/sanitize-html.js';
+import { ZodError } from '../lib/zod.js';
+import { jobItemSchema, jobListResponseSchema, jobQuerySchema } from './job-schemas.js';
 
-export { jobItemSchema, jobListResponseSchema, jobQuerySchema } from './job-schemas';
+export { jobItemSchema, jobListResponseSchema, jobQuerySchema } from './job-schemas.js';
 
 type JobListResponse = {
   items: Array<Prisma.JobGetPayload<{ include: { company: true; region: true } }>>;
@@ -148,7 +148,7 @@ export function registerJobRoutes(app: Hono) {
         total: result.total
       });
       return context.json(response);
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ZodError) {
         return context.json({ error: 'Invalid query', details: error.issues }, 400);
       }
@@ -169,7 +169,7 @@ export function registerJobRoutes(app: Hono) {
       }
 
       return context.json(toJobDto(job));
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ZodError) {
         return context.json({ error: 'Invalid request', details: error.issues }, 400);
       }
