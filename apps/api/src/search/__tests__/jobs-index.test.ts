@@ -49,6 +49,7 @@ test('mapJobToSearchDocument normalizes job fields for search index', () => {
   assert.equal(document.isRemote, true);
   assert.deepEqual(document.skills, ['JavaScript', 'React']);
   assert.deepEqual(document.tags, ['frontend']);
+  assert.equal(document.sourceUrl, 'https://example.com/job');
   assert.equal(document.urlOriginal, 'https://example.com/job');
   assert.equal(document.urlApply, 'https://example.com/apply');
   assert.equal(document.salaryMin, 2000);

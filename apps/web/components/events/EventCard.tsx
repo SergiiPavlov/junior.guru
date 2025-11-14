@@ -10,6 +10,7 @@ import type { EventListItem } from "../../lib/api";
 export function EventCard({ event }: { event: EventListItem }) {
   const locale = useLocale();
   const t = useTranslations("events");
+  const originalUrl = event.sourceUrl ?? event.urlOriginal ?? event.urlRegister;
 
   return (
     <article className="card flex flex-col gap-3">
@@ -25,9 +26,9 @@ export function EventCard({ event }: { event: EventListItem }) {
         >
           {t("openDetails")} 
         </Link>
-        {event.urlOriginal && (
+        {originalUrl && (
           <a
-            href={event.urlOriginal}
+            href={originalUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex min-h-[44px] items-center rounded-full bg-black px-4 text-sm font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"

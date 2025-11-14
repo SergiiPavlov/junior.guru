@@ -30,6 +30,9 @@ test.describe('Jobs smoke (uk locale)', () => {
 
     const openOriginal = page.getByRole('link', { name: /Відкрити оригінал|Open original|Open on site/i });
     await expect(openOriginal).toBeVisible();
+    const originalHref = await openOriginal.getAttribute('href');
+    expect(originalHref).toBeTruthy();
+    expect(originalHref).not.toContain('jobs.example');
 
     await page.goBack();
     await expect(page).toHaveURL(/\/uk\/jobs.*q=React/i);

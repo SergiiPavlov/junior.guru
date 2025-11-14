@@ -57,6 +57,14 @@ jobs:
       - run: npm ci
       - name: Start infra (postgres, meili, redis)
         run: docker compose -f ops/docker-compose.yml up -d
+      - name: Configure Prisma env
+        run: |
+          mkdir -p packages/db/prisma
+          cat <<EOF > packages/db/prisma/.env
+          DATABASE_URL=${DATABASE_URL}
+          EOF
+      - name: Wait for services
+        run: npx wait-on -t 120000 tcp:localhost:5432 tcp:localhost:7700
       - name: Prepare database
         run: |
           npm run db:migrate
@@ -65,7 +73,7 @@ jobs:
         run: npm run build
       - name: Start app
         run: |
-          npm run start >/dev/null 2>&1 &
+          nohup npm run start >/dev/null 2>&1 &
           npx wait-on -t 120000 http://localhost:8787 http://localhost:3000
       - name: Install Playwright
         run: npx playwright install --with-deps

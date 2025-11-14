@@ -47,6 +47,7 @@ const jobItemSchema = z.object({
   skills: z.array(z.string()),
   tags: z.array(z.string()),
   description: z.string().optional(),
+  sourceUrl: z.string().optional(),
   urlOriginal: z.string().optional(),
   urlApply: z.string().optional(),
   publishedAt: z.string(),
