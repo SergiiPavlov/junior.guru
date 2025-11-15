@@ -5,7 +5,7 @@ import path from 'node:path';
 export function registerDemoRoutes(api: Hono) {
   api.get('/demo/workua-jobs', async (c) => {
     try {
-      const filePath = path.resolve(process.cwd(), 'seed', 'workua-jobs.mock.json');
+      const filePath = path.resolve(process.cwd(), '..', '..', 'seed', 'workua-jobs.mock.json');
       const raw = await fs.readFile(filePath, 'utf8');
       const data = JSON.parse(raw);
 
