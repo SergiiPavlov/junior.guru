@@ -48,6 +48,28 @@
    Это подтянет JSON из `/api/v1/demo/workua-jobs`, нормализует вакансии и обновит БД/Meili.
 4) Проверить поиск и API можно командами из раздела ниже.
 
+## Local demo data (CSV + HTTP feed)
+1) Подготовь окружение:
+   - Скопируй `.env.example` → `.env.local` (или `.env`) и при необходимости поправь `DATABASE_URL` / Meili.
+   - Задай `EXTERNAL_JOBS_FEED_URL` (например, через `.env.local`). По умолчанию можно использовать `http://localhost:8787/api/v1/demo/workua-jobs`.
+2) Установи зависимости и прогоняй миграции один раз:
+   ```bash
+   npm install
+   npm run db:migrate
+   ```
+3) Получи полный демо-набор в БД и Meili одной командой:
+   ```bash
+   npm run demo:seed
+   ```
+   Команда `demo:seed` выполняет:
+   - `db:migrate` и `db:seed` — базовые сущности.
+   - `workers:jobs` и `workers:events` — CSV-воркеры импортируют вакансии и события из `seed/*.csv`.
+   - `search:reindex` — Meili получает свежие индексы.
+4) Чтобы отдельно прогнать HTTP-воркер по фиду (`EXTERNAL_JOBS_FEED_URL`), запусти:
+   ```bash
+   npm run workers:jobs:http
+   ```
+
 ## Search (Meilisearch)
 1) Подними инфраструктуру:
    ```bash
