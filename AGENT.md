@@ -170,6 +170,9 @@ Requirements:
 
 - `/apps/workers`: generic interface `fetchList() → normalize() → upsert()`.
 - Provide **mock** scraper that reads `seed/*.csv` → upserts DB → reindexes Meili.
+- Jobs workers:
+  - CSV seed (`npm run workers:jobs` or `npm run -w @junior-ua/workers jobs:run`) — stable dev data.
+  - HTTP demo feed (`npm run -w @junior-ua/workers jobs:run:http`) — pulls JSON from `EXTERNAL_JOBS_FEED_URL`.
 - CLI:
   - `npm run -w @junior-ua/workers jobs:run`
   - `npm run -w @junior-ua/workers events:run`
