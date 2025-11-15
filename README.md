@@ -70,6 +70,30 @@
    npm run workers:jobs:http
    ```
 
+## Real job board API (Jooble)
+Jooble — первый реальный источник вакансий в этом репозитории. Он работает поверх публичного API и использует те же Prisma/Meili-пайплайны, что и CSV/HTTP демо.
+
+1. Получи партнёрский ключ в Jooble (нужна регистрация на их платформе) и добавь параметры в `.env`:
+   ```env
+   JOOBLE_API_KEY=your_api_key_here
+   JOOBLE_API_ENDPOINT=https://jooble.org/api
+   JOOBLE_LOCATION_DEFAULT=Ukraine
+   # необязательно, но можно задать на запуск:
+   # JOOBLE_LOCATION_OVERRIDE=Poland
+   ```
+2. Импортируй вакансии и обнови поисковый индекс:
+   ```bash
+   npm run workers:jobs:jooble
+   npm run search:reindex
+   ```
+   В ответе `/api/v1/search/jobs` появятся записи с `sourceName=Jooble`, а страница `/[locale]/jobs` отобразит свежие вакансии.
+3. Чтобы быстро менять страну/регион, используй `JOOBLE_LOCATION_OVERRIDE` либо CLI-параметр:
+   ```bash
+   npm run workers:jobs:jooble -- --location=Poland
+   npm run search:reindex
+   ```
+   Override позволяет запускать сбор по Польше, Германии и т.д. без правки `.env`. Для Украины воркер автоматически мапит города на существующие регионы, поэтому текущие фильтры продолжают работать корректно.
+
 ## Search (Meilisearch)
 1) Подними инфраструктуру:
    ```bash
