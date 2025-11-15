@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { Breadcrumbs } from "../../../components/common/Breadcrumbs";
 import { JobsList } from "../../../components/jobs/JobsList";
 import { fetchJobsList } from "../../../lib/api";
 import { isLocale } from "../../../lib/i18n/config";
@@ -47,12 +48,24 @@ export default async function JobsPage({ params, searchParams }: JobsPageProps) 
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const query = parseJobsQuery(resolvedSearchParams);
   const initialData = await fetchJobsList(query, { revalidate });
+  const [tNav, tJobs] = await Promise.all([
+    getTranslator(locale, "navigation"),
+    getTranslator(locale, "jobs")
+  ]);
 
   return (
-    <Suspense fallback={<div className="grid gap-4 md:grid-cols-2">{Array.from({ length: 4 }).map((_, index) => (
-      <div key={index} className="h-44 w-full animate-pulse rounded-xl bg-gray-200" aria-hidden="true" />
-    ))}</div>}>
-      <JobsList initialData={initialData} initialFilters={query} />
-    </Suspense>
+    <>
+      <Breadcrumbs
+        items={[
+          { href: `/${locale}`, label: tNav("home") },
+          { label: tJobs("title") }
+        ]}
+      />
+      <Suspense fallback={<div className="grid gap-4 md:grid-cols-2">{Array.from({ length: 4 }).map((_, index) => (
+        <div key={index} className="h-44 w-full animate-pulse rounded-xl bg-gray-200" aria-hidden="true" />
+      ))}</div>}>
+        <JobsList initialData={initialData} initialFilters={query} />
+      </Suspense>
+    </>
   );
 }

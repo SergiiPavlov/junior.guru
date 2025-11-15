@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { Breadcrumbs } from "../../../../components/common/Breadcrumbs";
 import { fetchJob } from "../../../../lib/api";
 import { formatCurrency, formatDate, stripHtml } from "../../../../lib/format";
 import { isLocale } from "../../../../lib/i18n/config";
@@ -57,6 +58,7 @@ export default async function JobDetails({ params }: JobDetailsParams) {
   try {
     const job = await fetchJob(id);
     const t = await getTranslator(locale, "job");
+    const tNav = await getTranslator(locale, "navigation");
     const description = stripHtml(job.description) ?? job.title;
     const originalUrl = job.sourceUrl ?? job.urlOriginal ?? job.urlApply;
 
@@ -118,9 +120,16 @@ export default async function JobDetails({ params }: JobDetailsParams) {
 
     return (
       <article className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+        <Breadcrumbs
+          items={[
+            { href: `/${locale}`, label: tNav("home") },
+            { href: `/${locale}/jobs`, label: tNav("jobs") },
+            { label: job.title }
+          ]}
+        />
         <Link
           href={`/${locale}/jobs`}
-          className="text-sm text-blue-600 underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+          className="text-sm text-blue-600 underline underline-offset-2 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
         >
           {t("back")}
         </Link>

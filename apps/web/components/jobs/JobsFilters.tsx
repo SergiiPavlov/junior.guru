@@ -69,7 +69,13 @@ export function JobsFilters() {
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("keyword")}</span>
-          <input name="q" defaultValue={currentValues.q} className="input" placeholder={t("keyword")} />
+          <input
+            name="q"
+            defaultValue={currentValues.q}
+            className="input"
+            placeholder={t("keyword")}
+          />
+          <span className="text-xs text-gray-500">{t("keywordHint")}</span>
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("city")}</span>

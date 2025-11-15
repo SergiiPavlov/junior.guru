@@ -44,7 +44,8 @@
       "sort": "Sort",
       "perPage": "Per page",
       "apply": "Apply",
-      "reset": "Reset"
+      "reset": "Reset",
+      "keywordHint": "Search by job title, company or tech stack"
     },
     "sortOptions": {
       "recent": "Newest",
@@ -52,7 +53,7 @@
       "salary_desc": "Salary ↓",
       "salary_asc": "Salary ↑"
     },
-    "empty": "No jobs match your filters.",
+    "empty": "No jobs match these filters. Try changing the keyword or clearing some filters.",
     "openOriginal": "Open original",
     "openDetails": "View",
     "salary": "{min}–{max} {currency}",
