@@ -19,8 +19,11 @@ const emptyHintKeys = ["filters", "keyword", "location"] as const;
 function JobsListContent({ initialData, initialFilters }: { initialData: JobListResponse; initialFilters: JobsQueryInput }) {
   const searchParams = useSearchParams();
   const t = useTranslations("jobs");
+  const tError = useTranslations("jobs.error");
   const [data, setData] = useState<JobListResponse>(initialData);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [retryToken, setRetryToken] = useState(0);
   const initialFiltersRef = useRef(initialFilters);
 
   const filters = useMemo(() => {
@@ -30,29 +33,33 @@ function JobsListContent({ initialData, initialFilters }: { initialData: JobList
 
   useEffect(() => {
     const initial = initialFiltersRef.current;
-    const shouldFetch = JSON.stringify(initial) !== JSON.stringify(filters);
-    if (!shouldFetch) {
+    const hasFiltersChanged = JSON.stringify(initial) !== JSON.stringify(filters);
+    if (!hasFiltersChanged && retryToken === 0) {
       return;
     }
     const controller = new AbortController();
     setIsLoading(true);
+    setError(null);
     fetchJobsList(filters, { signal: controller.signal })
       .then((result) => {
         setData(result);
       })
       .catch((error) => {
-        if (error.name !== "AbortError") {
-          console.error("Failed to fetch jobs", error);
+        if (error.name === "AbortError") {
+          return;
         }
+        console.error("Failed to fetch jobs", error);
+        setError(error instanceof Error ? error : new Error("Failed to load jobs"));
       })
       .finally(() => {
         setIsLoading(false);
       });
     return () => controller.abort();
-  }, [filters]);
+  }, [filters, retryToken]);
 
   const totalPages = Math.max(1, Math.ceil(data.total / data.perPage));
   const hasJobs = data.items.length > 0;
+  const showList = !error;
 
   return (
     <div className="space-y-6">
@@ -67,14 +74,27 @@ function JobsListContent({ initialData, initialFilters }: { initialData: JobList
           ))}
         </div>
       )}
-      {!isLoading && hasJobs && (
+      {!isLoading && error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+          <p className="font-medium">{tError("title")}</p>
+          <p className="mt-1">{tError("description")}</p>
+          <button
+            type="button"
+            onClick={() => setRetryToken((token) => token + 1)}
+            className="mt-3 inline-flex items-center rounded-lg border border-red-200 bg-white px-3 py-1.5 font-medium text-red-800 shadow-sm transition hover:bg-red-50"
+          >
+            {tError("retry")}
+          </button>
+        </div>
+      )}
+      {showList && !isLoading && hasJobs && (
         <div className="grid gap-4 md:grid-cols-2">
           {data.items.map((job) => (
             <JobCard key={job.id} job={job} />
           ))}
         </div>
       )}
-      {!isLoading && !hasJobs && (
+      {showList && !isLoading && !hasJobs && (
         <div className="rounded-xl border border-dashed border-gray-200 bg-white p-6">
           <p className="text-base font-semibold text-gray-900">{t("empty.title")}</p>
           <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-gray-600">

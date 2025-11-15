@@ -68,6 +68,11 @@
     "salaryFrom": "from {min} {currency}",
     "pagination": {
       "page": "Page {page} of {pages}"
+    },
+    "error": {
+      "title": "We couldn’t load jobs right now",
+      "description": "Something went wrong while loading the jobs list. Please try again in a moment.",
+      "retry": "Try again"
     }
   },
   "job": {
@@ -97,7 +102,12 @@
     "empty": "No events found.",
     "openOriginal": "Details",
     "openDetails": "View",
-    "summary": "{count} events"
+    "summary": "{count} events",
+    "error": {
+      "title": "We couldn’t load events right now",
+      "description": "Something went wrong while loading the events list. Please try again in a moment.",
+      "retry": "Try again"
+    }
   },
   "event": {
     "back": "← Back to events",
