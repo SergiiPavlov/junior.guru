@@ -31,6 +31,7 @@
   },
   "jobs": {
     "title": "Jobs",
+    "results_summary": "Found {count} jobs",
     "filters": {
       "keyword": "Keyword",
       "city": "City",
@@ -53,7 +54,14 @@
       "salary_desc": "Salary ↓",
       "salary_asc": "Salary ↑"
     },
-    "empty": "No jobs match these filters. Try changing the keyword or clearing some filters.",
+    "empty": {
+      "title": "No jobs found for your query",
+      "hints": {
+        "filters": "Try removing some filters",
+        "keyword": "Try a different keyword",
+        "location": "Choose another city or Remote"
+      }
+    },
     "openOriginal": "Open original",
     "openDetails": "View",
     "salary": "{min}–{max} {currency}",

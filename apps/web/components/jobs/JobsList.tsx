@@ -14,6 +14,8 @@ import { JobsFilters } from "./JobsFilters";
 
 import type { JobListResponse, JobsQueryInput } from "../../lib/api";
 
+const emptyHintKeys = ["filters", "keyword", "location"] as const;
+
 function JobsListContent({ initialData, initialFilters }: { initialData: JobListResponse; initialFilters: JobsQueryInput }) {
   const searchParams = useSearchParams();
   const t = useTranslations("jobs");
@@ -50,10 +52,14 @@ function JobsListContent({ initialData, initialFilters }: { initialData: JobList
   }, [filters]);
 
   const totalPages = Math.max(1, Math.ceil(data.total / data.perPage));
+  const hasJobs = data.items.length > 0;
 
   return (
     <div className="space-y-6">
       <JobsFilters />
+      <div className="rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-600">
+        {t("results_summary", { count: data.total })}
+      </div>
       {isLoading && (
         <div className="grid gap-4 md:grid-cols-2">
           {Array.from({ length: 4 }).map((_, index) => (
@@ -61,12 +67,21 @@ function JobsListContent({ initialData, initialFilters }: { initialData: JobList
           ))}
         </div>
       )}
-      {!isLoading && (
+      {!isLoading && hasJobs && (
         <div className="grid gap-4 md:grid-cols-2">
           {data.items.map((job) => (
             <JobCard key={job.id} job={job} />
           ))}
-          {data.items.length === 0 && <div className="muted">{t("empty")}</div>}
+        </div>
+      )}
+      {!isLoading && !hasJobs && (
+        <div className="rounded-xl border border-dashed border-gray-200 bg-white p-6">
+          <p className="text-base font-semibold text-gray-900">{t("empty.title")}</p>
+          <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-gray-600">
+            {emptyHintKeys.map((hintKey) => (
+              <li key={hintKey}>{t(`empty.hints.${hintKey}`)}</li>
+            ))}
+          </ul>
         </div>
       )}
       <div className="text-sm text-gray-500">
