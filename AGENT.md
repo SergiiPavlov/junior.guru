@@ -170,9 +170,29 @@ Requirements:
 
 - `/apps/workers`: generic interface `fetchList() → normalize() → upsert()`.
 - Provide **mock** scraper that reads `seed/*.csv` → upserts DB → reindexes Meili.
-- Jobs workers:
-  - CSV seed (`npm run workers:jobs` or `npm run -w @junior-ua/workers jobs:run`) — stable dev data.
-  - HTTP demo feed (`npm run -w @junior-ua/workers jobs:run:http`) — pulls JSON from `EXTERNAL_JOBS_FEED_URL`.
+- Jobs workers now have **two** complementary modes:
+  - **CSV seed** — `npm run workers:jobs` or `npm run -w @junior-ua/workers jobs:run` читає `seed/jobs.csv`, що дає стабільний локальний набір для розробки без мережі.
+  - **HTTP demo feed (Work.ua style)** — перед запуском вистави `EXTERNAL_JOBS_FEED_URL=http://localhost:8787/api/v1/demo/workua-jobs` і проганяй `npm run -w @junior-ua/workers jobs:run:http`. Воркeр підтягне JSON, нормалізує в `ExternalJob` і апсертить через Prisma, що тригерить Meili-хуки.
+    - Формат `ExternalJob`:
+      ```ts
+      type ExternalJob = {
+        id: string;
+        title: string;
+        url: string;
+        company?: string;
+        city?: string;
+        remote?: boolean;
+        salaryMin?: number;
+        salaryMax?: number;
+        currency?: string;
+        skills?: string[];
+        tags?: string[];
+        description?: string;
+        publishedAt?: string;
+        validUntil?: string;
+      };
+      ```
+    - Мапінг у Prisma Job: `id` → `slug` (з префіксом джерела), `url` → `applyUrl`, `company` → `companyName`, `city` та `remote` → відповідні поля/фільтри, зарплата+валюта → `salaryMin/Max/Currency`, `skills`/`tags` → масиви для Meili та фільтрів, `publishedAt`/`validUntil` → дати у БД, `description` → `descriptionHtml`. Поле `source` виставляється як external HTTP feed (наприклад `workua_demo`).
 - CLI:
   - `npm run -w @junior-ua/workers jobs:run`
   - `npm run -w @junior-ua/workers events:run`

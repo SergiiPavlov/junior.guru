@@ -6,6 +6,7 @@ import { env } from './env.js';
 import { createCors } from './middleware/cors.js';
 import { createRateLimit } from './middleware/rate-limit.js';
 import { registerAdminRoutes } from './routes/admin.js';
+import { registerDemoRoutes } from './routes/demo.js';
 import { registerEventRoutes } from './routes/events.js';
 import { registerJobRoutes } from './routes/jobs.js';
 import { registerSearchRoutes } from './routes/search.js';
@@ -28,6 +29,7 @@ registerJobRoutes(api);
 registerEventRoutes(api);
 registerSearchRoutes(api);
 registerAdminRoutes(api);
+registerDemoRoutes(api);
 
 if (isSearchEnabled) {
   void (async () => {
