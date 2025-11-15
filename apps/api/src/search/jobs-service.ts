@@ -1,9 +1,11 @@
-import { jobItemSchema, jobQuerySchema } from '../routes/job-schemas';
-import { JOBS_INDEX, meiliClient } from './client';
-import type { MeiliHttpClient, SearchParams } from './client';
-import type { JobSearchDocument } from './jobs-index';
+import { jobItemSchema, jobQuerySchema } from '../routes/job-schemas.js';
+import { findJobsByQuery, mapJobRecordToItem } from '../services/jobs-query.js';
+import { JOBS_INDEX, meiliClient } from './client.js';
+import type { MeiliHttpClient, SearchParams } from './client.js';
+import type { JobSearchDocument } from './jobs-index.js';
 
 type JobQueryInput = ReturnType<typeof jobQuerySchema.parse>;
+type FindJobsByQuery = typeof findJobsByQuery;
 
 type JobItem = ReturnType<typeof jobItemSchema['parse']>;
 
@@ -32,11 +34,11 @@ function buildFilters(input: JobQueryInput): SearchParams['filter'] {
   }
 
   if (input.skills.length > 0) {
-    filters.push(input.skills.map((skill) => `skills = "${escapeFilterValue(skill)}"`));
+    filters.push(input.skills.map((skill: string) => `skills = "${escapeFilterValue(skill)}"`));
   }
 
   if (input.tags.length > 0) {
-    filters.push(input.tags.map((tag) => `tags = "${escapeFilterValue(tag)}"`));
+    filters.push(input.tags.map((tag: string) => `tags = "${escapeFilterValue(tag)}"`));
   }
 
   if (input.salaryMin !== undefined) {
@@ -96,11 +98,15 @@ function mapHitToJobItem(hit: JobSearchDocument) {
 
 export async function searchJobsInIndex(
   input: JobQueryInput,
-  client: MeiliHttpClient | null = meiliClient
+  client: MeiliHttpClient | null = meiliClient,
+  fallback: FindJobsByQuery = findJobsByQuery
 ): Promise<JobSearchResponse> {
   if (!client) {
-    console.warn('Search disabled; returning empty jobs search result.');
-    return { items: [], total: 0 };
+    const result = await fallback(input);
+    return {
+      items: result.items.map(mapJobRecordToItem),
+      total: result.total
+    };
   }
   const index = client.index<JobSearchDocument>(JOBS_INDEX);
   const sort = buildSort(input.sort);

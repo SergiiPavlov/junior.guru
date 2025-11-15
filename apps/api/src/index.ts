@@ -2,14 +2,15 @@ import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
 
-import { env } from './env';
-import { createCors } from './middleware/cors';
-import { createRateLimit } from './middleware/rate-limit';
-import { registerAdminRoutes } from './routes/admin';
-import { registerEventRoutes } from './routes/events';
-import { registerJobRoutes } from './routes/jobs';
-import { registerSearchRoutes } from './routes/search';
-import { ensureSearchIndexes, isSearchEnabled } from './search/client';
+import { env } from './env.js';
+import { createCors } from './middleware/cors.js';
+import { createRateLimit } from './middleware/rate-limit.js';
+import { registerAdminRoutes } from './routes/admin.js';
+import { registerDemoRoutes } from './routes/demo.js';
+import { registerEventRoutes } from './routes/events.js';
+import { registerJobRoutes } from './routes/jobs.js';
+import { registerSearchRoutes } from './routes/search.js';
+import { ensureSearchIndexes, isSearchEnabled } from './search/client.js';
 
 const app = new Hono();
 
@@ -28,6 +29,7 @@ registerJobRoutes(api);
 registerEventRoutes(api);
 registerSearchRoutes(api);
 registerAdminRoutes(api);
+registerDemoRoutes(api);
 
 if (isSearchEnabled) {
   void (async () => {

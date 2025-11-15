@@ -40,24 +40,34 @@
    npm run workers:events
    ```
    После прогона ожидается 39 вакансий и 11 событий в Postgres, а индексы Meilisearch синхронизированы.
+   Чтобы протестировать HTTP-воркер на Work.ua-подобном фиде, сначала запусти API (`npm run dev`), затем:
+   ```bash
+   EXTERNAL_JOBS_FEED_URL=http://localhost:8787/api/v1/demo/workua-jobs \
+     npm run -w @junior-ua/workers jobs:run:http
+   ```
+   Это подтянет JSON из `/api/v1/demo/workua-jobs`, нормализует вакансии и обновит БД/Meili.
 4) Проверить поиск и API можно командами из раздела ниже.
 
-## Поиск (Meilisearch)
-1) Запусти инфраструктуру:
+## Search (Meilisearch)
+1) Подними инфраструктуру:
    ```bash
    docker compose -f ops/docker-compose.yml up -d meilisearch
    ```
-2) Скопируй `.env.example` → `.env.local` и пропиши `API_ADMIN_TOKEN=<секрет>`.
-3) Выполни полную переиндексацию:
+2) Убедись, что `.env.local` содержит `MEILI_HOST=http://localhost:7700`, `MEILI_MASTER_KEY=masterKey` и `API_SEARCH_ENABLED=true`.
+3) Прогоняй миграции и сиды перед индексацией:
+   ```bash
+   npm run db:migrate
+   npm run db:seed
+   ```
+4) Собери Meili-индексы и документы одной командой:
    ```bash
    npm run search:reindex
    ```
-   Скрипт создаст индексы `jobs` и `events`, обновит документы и синхронизирует данные.
-4) Проверить, что API отдает результаты из Meilisearch:
+5) Запусти dev-сервер:
    ```bash
-   curl "http://localhost:8787/api/v1/search/jobs?q=react"
+   npm run dev
    ```
-   Для повторной индексации через API отправь `POST /api/v1/jobs/reindex` с заголовком `x-admin-token: $API_ADMIN_TOKEN`.
+   Теперь `/api/v1/search/jobs` и страница `/[locale]/jobs` будут использовать Meilisearch. Если переменные окружения не заданы, API вернёт результаты через Prisma-фолбек.
 
 ## Структура
 - `apps/web` — Next.js 15 (App Router), базовые страницы `/[locale]`, `/[locale]/jobs`, `/[locale]/events`

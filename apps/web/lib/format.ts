@@ -1,11 +1,18 @@
 import type { Locale } from "./i18n/config";
 
+const currencySuffix: Record<string, string> = {
+  UAH: "грн",
+  USD: "$",
+  EUR: "€"
+};
+
 export function formatCurrency(locale: Locale, value: number, currency: string) {
-  return new Intl.NumberFormat(locale === "uk" ? "uk-UA" : "en-US", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0
-  }).format(value);
+  const formatter = new Intl.NumberFormat(locale === "uk" ? "uk-UA" : "en-US", {
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0
+  });
+  const suffix = currencySuffix[currency] ?? currency.toUpperCase();
+  return `${formatter.format(value)} ${suffix}`;
 }
 
 export function formatDateTime(locale: Locale, value: string | Date, options?: Intl.DateTimeFormatOptions) {

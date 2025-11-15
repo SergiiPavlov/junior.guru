@@ -32,7 +32,10 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run -w @junior-ua/api prisma:generate
-      - run: npm run build
+      - name: Build API
+        run: npm run -w @junior-ua/api build
+      - name: Build Web
+        run: CI=1 npm run -w @junior-ua/web build
       - name: Upload build artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -48,6 +51,7 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/junior_ua?schema=public
       NEXT_PUBLIC_API_BASE: http://localhost:8787/api/v1
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -69,12 +73,25 @@ jobs:
         run: |
           npm run db:migrate
           npm run db:seed
-      - name: Build app
-        run: npm run build
-      - name: Start app
+      - name: Build API
+        run: npm run -w @junior-ua/api build
+      - name: Build Web
+        run: CI=1 npm run -w @junior-ua/web build
+      - name: Start API
         run: |
-          nohup npm run start >/dev/null 2>&1 &
-          npx wait-on -t 120000 http://localhost:8787 http://localhost:3000
+          nohup npm run -w @junior-ua/api start > api.log 2>&1 &
+          npx wait-on -t 120000 http://localhost:8787/api/v1/health
+      - name: Start Web
+        run: |
+          nohup npm run -w @junior-ua/web start > web.log 2>&1 &
+          npx wait-on -t 120000 http://localhost:3000
+      - name: Print app logs on failure
+        if: failure()
+        run: |
+          echo "===== api.log ====="
+          cat api.log || echo "no api.log"
+          echo "===== web.log ====="
+          cat web.log || echo "no web.log"
       - name: Install Playwright
         run: npx playwright install --with-deps
       - name: Run E2E
