@@ -23,6 +23,7 @@
     "workers:jobs": "npm run -w @junior-ua/workers jobs:run",
     "workers:events": "npm run -w @junior-ua/workers events:run",
     "workers:jobs:http": "npm run -w @junior-ua/workers jobs:run:http",
+    "workers:jobs:jooble": "npm run -w @junior-ua/workers jobs:run:jooble",
     "lint:web": "npm run -w @junior-ua/web lint",
     "format:web": "npm run -w @junior-ua/web format",
     "format:web:write": "npm run -w @junior-ua/web format:write",
