@@ -40,6 +40,12 @@
    npm run workers:events
    ```
    После прогона ожидается 39 вакансий и 11 событий в Postgres, а индексы Meilisearch синхронизированы.
+   Чтобы протестировать HTTP-воркер на Work.ua-подобном фиде, сначала запусти API (`npm run dev`), затем:
+   ```bash
+   EXTERNAL_JOBS_FEED_URL=http://localhost:8787/api/v1/demo/workua-jobs \
+     npm run -w @junior-ua/workers jobs:run:http
+   ```
+   Это подтянет JSON из `/api/v1/demo/workua-jobs`, нормализует вакансии и обновит БД/Meili.
 4) Проверить поиск и API можно командами из раздела ниже.
 
 ## Search (Meilisearch)
