@@ -5,11 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
- "jobs:run": "tsx --env-file=../../.env src/cli/jobs.ts",
-"jobs:run:http": "tsx --env-file=../../.env src/cli/jobs.ts --mode=http",
-"events:run": "tsx --env-file=../../.env src/cli/events.ts",
-"test": "tsx --env-file=../../.env --test"
-
+    "jobs:run": "tsx --env-file=../../.env src/cli/jobs.ts",
+    "jobs:run:http": "tsx --env-file=../../.env src/cli/jobs.ts --mode=http",
+    "events:run": "tsx --env-file=../../.env src/cli/events.ts",
+    "test": "tsx --env-file=../../.env --test"
   },
   "dependencies": {
     "@prisma/client": "^5.16.2"
