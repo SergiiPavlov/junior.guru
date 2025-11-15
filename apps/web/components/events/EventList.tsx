@@ -17,8 +17,11 @@ import type { EventListResponse, EventsQueryInput } from "../../lib/api";
 function EventListContent({ initialData, initialFilters }: { initialData: EventListResponse; initialFilters: EventsQueryInput }) {
   const searchParams = useSearchParams();
   const t = useTranslations("events");
+  const tError = useTranslations("events.error");
   const [data, setData] = useState<EventListResponse>(initialData);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [retryToken, setRetryToken] = useState(0);
   const initialFiltersRef = useRef(initialFilters);
 
   const filters = useMemo(() => {
@@ -27,24 +30,29 @@ function EventListContent({ initialData, initialFilters }: { initialData: EventL
   }, [searchParams]);
 
   useEffect(() => {
-    const shouldFetch = JSON.stringify(initialFiltersRef.current) !== JSON.stringify(filters);
-    if (!shouldFetch) {
+    const hasFiltersChanged = JSON.stringify(initialFiltersRef.current) !== JSON.stringify(filters);
+    if (!hasFiltersChanged && retryToken === 0) {
       return;
     }
     const controller = new AbortController();
     setIsLoading(true);
+    setError(null);
     fetchEventsList(filters, { signal: controller.signal })
       .then((result) => {
         setData(result);
       })
       .catch((error) => {
-        if (error.name !== "AbortError") {
-          console.error("Failed to fetch events", error);
+        if (error.name === "AbortError") {
+          return;
         }
+        console.error("Failed to fetch events", error);
+        setError(error instanceof Error ? error : new Error("Failed to load events"));
       })
       .finally(() => setIsLoading(false));
     return () => controller.abort();
-  }, [filters]);
+  }, [filters, retryToken]);
+
+  const showList = !error;
 
   return (
     <div className="space-y-6">
@@ -56,7 +64,20 @@ function EventListContent({ initialData, initialFilters }: { initialData: EventL
           ))}
         </div>
       )}
-      {!isLoading && (
+      {!isLoading && error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+          <p className="font-medium">{tError("title")}</p>
+          <p className="mt-1">{tError("description")}</p>
+          <button
+            type="button"
+            onClick={() => setRetryToken((token) => token + 1)}
+            className="mt-3 inline-flex items-center rounded-lg border border-red-200 bg-white px-3 py-1.5 font-medium text-red-800 shadow-sm transition hover:bg-red-50"
+          >
+            {tError("retry")}
+          </button>
+        </div>
+      )}
+      {showList && !isLoading && (
         <div className="grid gap-4 md:grid-cols-2">
           {data.items.map((event) => (
             <EventCard key={event.id} event={event} />
