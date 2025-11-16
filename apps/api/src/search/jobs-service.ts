@@ -29,6 +29,11 @@ function buildFilters(input: JobQueryInput): SearchParams['filter'] {
     filters.push(`region = "${escapeFilterValue(input.region)}"`);
   }
 
+  if (input.country) {
+    const countryTag = `country:${escapeFilterValue(input.country)}`;
+    filters.push(`tags = "${countryTag}"`);
+  }
+
   if (input.remote !== undefined) {
     filters.push(`isRemote = ${input.remote ? 'true' : 'false'}`);
   }

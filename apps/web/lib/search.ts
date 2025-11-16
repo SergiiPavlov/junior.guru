@@ -22,6 +22,7 @@ export function parseJobsQuery(searchParams: Record<string, string | string[] | 
   const q = typeof searchParams.q === "string" ? searchParams.q : undefined;
   const city = typeof searchParams.city === "string" ? searchParams.city : undefined;
   const region = typeof searchParams.region === "string" ? searchParams.region : undefined;
+  const country = typeof searchParams.country === "string" ? searchParams.country : undefined;
   const remote = parseBoolean(typeof searchParams.remote === "string" ? searchParams.remote : undefined);
   const salaryMin = typeof searchParams.salaryMin === "string" ? Number.parseInt(searchParams.salaryMin, 10) : undefined;
   const currency = typeof searchParams.currency === "string" ? searchParams.currency : undefined;
@@ -37,6 +38,7 @@ export function parseJobsQuery(searchParams: Record<string, string | string[] | 
     q,
     city,
     region,
+    country,
     remote,
     salaryMin: Number.isFinite(salaryMin) ? salaryMin : undefined,
     currency,

@@ -88,6 +88,7 @@ export type JobsQueryInput = {
   q?: string;
   city?: string;
   region?: string;
+  country?: string;
   remote?: boolean;
   skills: string[];
   tags: string[];
@@ -122,6 +123,7 @@ function serializeJobsQuery(input: JobsQueryInput) {
   if (input.q) params.q = input.q;
   if (input.city) params.city = input.city;
   if (input.region) params.region = input.region;
+  if (input.country) params.country = input.country;
   if (input.remote !== undefined) params.remote = input.remote ? "true" : "false";
   if (input.skills.length > 0) params.skills = input.skills.join(",");
   if (input.tags.length > 0) params.tags = input.tags.join(",");
