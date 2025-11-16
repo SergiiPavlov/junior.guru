@@ -61,6 +61,11 @@ function buildJobWhere(input: JobQueryInput): Prisma.JobWhereInput {
     filters.push({ region: { code: { equals: input.region.trim(), mode: 'insensitive' } } });
   }
 
+  if (input.country) {
+    const countryTag = `country:${input.country}`;
+    filters.push({ tags: { has: countryTag } });
+  }
+
   if (input.remote !== undefined) {
     filters.push({ remote: input.remote });
   }

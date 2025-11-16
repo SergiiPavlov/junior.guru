@@ -21,6 +21,7 @@ export function JobsFilters() {
       q: params.get("q") ?? "",
       city: params.get("city") ?? "",
       region: params.get("region") ?? "",
+      country: params.get("country") ?? "",
       remote: params.get("remote") === "true",
       skills: params.get("skills") ?? "",
       tags: params.get("tags") ?? "",
@@ -85,15 +86,28 @@ export function JobsFilters() {
           <span>{t("region")}</span>
           <input name="region" defaultValue={currentValues.region} className="input" placeholder="UA-30" />
         </label>
-        <label className="flex flex-row items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            name="remote"
-            defaultChecked={currentValues.remote}
-            className="h-4 w-4"
-            aria-label={t("remote")}
-          />
-          <span>{t("remote")}</span>
+        <label className="flex flex-col gap-1 text-sm">
+          <span>{t("country")}</span>
+          <select name="country" defaultValue={currentValues.country} className="input">
+            <option value="">{t("countryAny")}</option>
+            <option value="UA">Ukraine</option>
+            <option value="PL">Poland</option>
+            <option value="DE">Germany</option>
+          </select>
+          <span className="text-xs text-gray-500">{t("countryHint")}</span>
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="remote"
+              defaultChecked={currentValues.remote}
+              className="h-4 w-4"
+              aria-label={t("remote")}
+            />
+            {t("remote")}
+          </span>
+          <span className="text-xs text-gray-500">{t("remoteHint")}</span>
         </label>
       </div>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
