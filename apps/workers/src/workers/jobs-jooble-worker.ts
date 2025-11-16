@@ -135,9 +135,10 @@ function parseSalary(value?: string | null): { min: number | null; max: number |
     return { min: null, max: null, currency };
   }
 
-  const numbers = numberMatches
-    .map((match) => Number.parseInt(match.replace(/[\s,]/g, ''), 10))
-    .filter((num) => Number.isFinite(num));
+ const numbers = numberMatches
+  .map((match) => Number.parseInt(match.replace(/[\s.,]/g, ''), 10))
+  .filter((num) => Number.isFinite(num));
+
 
   if (numbers.length === 0) {
     return { min: null, max: null, currency };
@@ -167,7 +168,14 @@ function slugify(value: string): string {
 }
 
 function buildJobSlug(raw: JoobleJob): string {
-  const parts = [raw.id, raw.title, raw.location].filter((part): part is string => Boolean(part && part.trim().length > 0));
+  const rawParts = [raw.id, raw.title, raw.location];
+
+  const parts = rawParts
+    // приводим всё к строкам, если значение вообще есть
+    .map((part) => (part == null ? null : String(part)))
+    // оставляем только непустые строки
+    .filter((part): part is string => part.trim().length > 0);
+
   for (const part of parts) {
     const candidate = slugify(part);
     if (candidate.length > 0) {
@@ -175,8 +183,10 @@ function buildJobSlug(raw: JoobleJob): string {
     }
   }
 
+  // жёсткий, но безопасный фоллбэк
   return `jooble-${Date.now()}`;
 }
+
 
 function parseLocation(rawLocation?: string | null): { city: string | null; countryCode: string | null } {
   if (!rawLocation) {
