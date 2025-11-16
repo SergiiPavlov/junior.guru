@@ -48,6 +48,52 @@
    Это подтянет JSON из `/api/v1/demo/workua-jobs`, нормализует вакансии и обновит БД/Meili.
 4) Проверить поиск и API можно командами из раздела ниже.
 
+## Local demo data (CSV + HTTP feed)
+1) Подготовь окружение:
+   - Скопируй `.env.example` → `.env.local` (или `.env`) и при необходимости поправь `DATABASE_URL` / Meili.
+   - Задай `EXTERNAL_JOBS_FEED_URL` (например, через `.env.local`). По умолчанию можно использовать `http://localhost:8787/api/v1/demo/workua-jobs`.
+2) Установи зависимости и прогоняй миграции один раз:
+   ```bash
+   npm install
+   npm run db:migrate
+   ```
+3) Получи полный демо-набор в БД и Meili одной командой:
+   ```bash
+   npm run demo:seed
+   ```
+   Команда `demo:seed` выполняет:
+   - `db:migrate` и `db:seed` — базовые сущности.
+   - `workers:jobs` и `workers:events` — CSV-воркеры импортируют вакансии и события из `seed/*.csv`.
+   - `search:reindex` — Meili получает свежие индексы.
+4) Чтобы отдельно прогнать HTTP-воркер по фиду (`EXTERNAL_JOBS_FEED_URL`), запусти:
+   ```bash
+   npm run workers:jobs:http
+   ```
+
+## Real job board API (Jooble)
+Jooble — первый реальный источник вакансий в этом репозитории. Он работает поверх публичного API и использует те же Prisma/Meili-пайплайны, что и CSV/HTTP демо.
+
+1. Получи партнёрский ключ в Jooble (нужна регистрация на их платформе) и добавь параметры в `.env`:
+   ```env
+   JOOBLE_API_KEY=your_api_key_here
+   JOOBLE_API_ENDPOINT=https://jooble.org/api
+   JOOBLE_LOCATION_DEFAULT=Ukraine
+   # необязательно, но можно задать на запуск:
+   # JOOBLE_LOCATION_OVERRIDE=Poland
+   ```
+2. Импортируй вакансии и обнови поисковый индекс:
+   ```bash
+   npm run workers:jobs:jooble
+   npm run search:reindex
+   ```
+   В ответе `/api/v1/search/jobs` появятся записи с `sourceName=Jooble`, а страница `/[locale]/jobs` отобразит свежие вакансии.
+3. Чтобы быстро менять страну/регион, используй `JOOBLE_LOCATION_OVERRIDE` либо CLI-параметр:
+   ```bash
+   npm run workers:jobs:jooble -- --location=Poland
+   npm run search:reindex
+   ```
+   Override позволяет запускать сбор по Польше, Германии и т.д. без правки `.env`. Для Украины воркер автоматически мапит города на существующие регионы, поэтому текущие фильтры продолжают работать корректно.
+
 ## Search (Meilisearch)
 1) Подними инфраструктуру:
    ```bash
