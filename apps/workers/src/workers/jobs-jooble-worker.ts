@@ -61,6 +61,7 @@ type JoobleJob = {
 
 type JoobleResponse = {
   jobs?: JoobleJob[];
+  totalCount?: number;
 };
 
 type NormalizedJob = {
@@ -174,7 +175,7 @@ function buildJobSlug(raw: JoobleJob): string {
     // приводим всё к строкам, если значение вообще есть
     .map((part) => (part == null ? null : String(part)))
     // оставляем только непустые строки
-    .filter((part): part is string => part.trim().length > 0);
+    .filter((part): part is string => part !== null && part.trim().length > 0);
 
   for (const part of parts) {
     const candidate = slugify(part);
@@ -257,6 +258,11 @@ export function createJobsJoobleWorker(
   const pageSize = Math.max(1, Math.floor(Number.isFinite(resolvedPageSize) ? resolvedPageSize : DEFAULT_PAGE_SIZE));
   const resolvedMaxPages = typeof options.maxPages === 'number' ? options.maxPages : DEFAULT_MAX_PAGES;
   const maxPages = Math.max(1, Math.floor(Number.isFinite(resolvedMaxPages) ? resolvedMaxPages : DEFAULT_MAX_PAGES));
+  const radius = process.env.JOOBLE_RADIUS?.trim();
+  const companySearch = process.env.JOOBLE_COMPANYSEARCH?.trim();
+  const searchModeValue = process.env.JOOBLE_SEARCH_MODE?.trim();
+  const searchMode = searchModeValue ? Number.parseInt(searchModeValue, 10) : undefined;
+  const normalizedSearchMode = Number.isFinite(searchMode) ? searchMode : undefined;
 
   let disabledLogged = false;
   let sourceIdPromise: Promise<string> | null = null;
@@ -465,14 +471,33 @@ export function createJobsJoobleWorker(
 
     const url = buildApiUrl(apiEndpoint, apiKey);
     const jobs: JoobleJob[] = [];
+    let fetchedAnyPage = false;
 
     for (let page = 1; page <= maxPages; page += 1) {
-      const payload = {
+      const payload: {
+        keywords: string;
+        location: string;
+        page: number;
+        ResultOnPage: number;
+        radius?: string;
+        companysearch?: string;
+        SearchMode?: number;
+      } = {
         keywords: query,
         location,
         page,
-        size: pageSize
+        ResultOnPage: pageSize
       };
+
+      if (radius) {
+        payload.radius = radius;
+      }
+      if (companySearch) {
+        payload.companysearch = companySearch;
+      }
+      if (normalizedSearchMode !== undefined) {
+        payload.SearchMode = normalizedSearchMode;
+      }
 
       const response = await fetch(url, {
         method: 'POST',
@@ -487,10 +512,19 @@ export function createJobsJoobleWorker(
       const data = (await response.json()) as JoobleResponse;
       const batch = Array.isArray(data.jobs) ? data.jobs : [];
       jobs.push(...batch);
+      fetchedAnyPage = true;
+
+      console.log(
+        `[workers] Jooble page ${page}: totalCount=${data.totalCount ?? 'n/a'}, jobs=${batch.length}`
+      );
 
       if (batch.length < pageSize) {
         break;
       }
+    }
+
+    if (fetchedAnyPage && jobs.length === 0) {
+      console.log('[workers] Jooble returned 0 jobs for the current query/location.');
     }
 
     return jobs;
