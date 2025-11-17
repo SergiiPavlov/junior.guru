@@ -94,6 +94,24 @@ Jooble — первый реальный источник вакансий в э
     ```
     Override позволяет запускать сбор по Польше, Германии и т.д. без правки `.env`. Для Украины воркер автоматически мапит города на существующие регионы, поэтому текущие фильтры продолжают работать корректно.
 
+## Remote job board API (Remotive)
+Remotive — дополнительный источник только для удалённых вакансий. Воркер использует публичный Remotive API и тот же пайплайн Prisma → Meilisearch, что и другие импортеры.
+
+1. (Опционально) задай параметры запроса в `.env`:
+   ```env
+   REMOTIVE_API_ENDPOINT=https://remotive.com/api/remote-jobs
+   REMOTIVE_CATEGORY=software-dev
+   REMOTIVE_SEARCH=junior
+   REMOTIVE_LIMIT=50
+   ```
+2. Импортируй вакансии и перестрой индекс:
+   ```bash
+   NODE_TLS_REJECT_UNAUTHORIZED=0 npm run -w @junior-ua/workers jobs:run:remotive
+   npm run search:reindex
+   ```
+   Команда добавит удалённые вакансии Remotive в таблицу `Job` и индекс Meilisearch. Все записи отмечаются тегом `source:remotive`, а при явном указании страны — тегом `country:UA/PL/DE`.
+3. При показе вакансии обязательно ссылайся на оригинальный источник: добавь ссылку вроде «Перейти на оригинал (Remotive)» через `urlOriginal` и явный бейдж/лейбл «Source: Remotive», чтобы не нарушать ToS Remotive.
+
 ### Country filters
 
 Каталог вакансий поддерживает параметр `country`, например `https://localhost:3000/uk/jobs?country=UA` или API-запрос `GET /api/v1/jobs?country=PL`.
