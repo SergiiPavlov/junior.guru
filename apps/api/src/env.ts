@@ -49,7 +49,13 @@ const envSchema = z.object({
     .string()
     .optional()
     .transform((value: string | undefined) => parseBoolean('API_SEARCH_ENABLED', value, true)),
-  API_ADMIN_TOKEN: z.string().optional().default('')
+  API_ADMIN_TOKEN: z.string().optional().default(''),
+  OPENAI_API_KEY: z.string().optional(),
+  AI_JOBS_MODEL: z.string().optional().default('gpt-4o-mini'),
+  AI_JOBS_ENABLED: z
+    .string()
+    .optional()
+    .transform((value: string | undefined) => parseBoolean('AI_JOBS_ENABLED', value, false))
 });
 
 const parsed = envSchema.parse(process.env as Record<string, unknown>);

@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { useTranslations } from "../../lib/i18n/provider";
 
+import { JobsAiDialog } from "./JobsAiDialog";
+
 const SORT_OPTIONS = ["recent", "relevant", "salary_desc", "salary_asc"] as const;
 const PER_PAGE_OPTIONS = [10, 20, 30, 40, 50];
 
@@ -168,6 +170,9 @@ export function JobsFilters() {
             {t("reset")}
           </button>
         </div>
+      </div>
+      <div className="border-t border-dashed border-black/10 pt-4">
+        <JobsAiDialog initialCountry={currentValues.country || undefined} initialRemoteOnly={currentValues.remote} />
       </div>
     </form>
   );

@@ -77,6 +77,23 @@
       "title": "We couldn’t load jobs right now",
       "description": "Something went wrong while loading the jobs list. Please try again in a moment.",
       "retry": "Try again"
+    },
+    "ai": {
+      "button": "AI help",
+      "buttonHint": "Describe your ideal job — AI will pick filters.",
+      "title": "AI assistant",
+      "description": "Share what you’re looking for and we’ll translate it into filters on our own job index.",
+      "queryLabel": "What do you need?",
+      "queryPlaceholder": "e.g. Junior React, remote, 25k+ UAH, Poland",
+      "queryHint": "Mention tech stack, salary expectations, country or remote mode.",
+      "remoteHint": "Prioritize remote-friendly roles",
+      "submit": "Ask AI",
+      "loading": "Asking AI…",
+      "close": "Close",
+      "notConfigured": "AI assistant is not configured right now.",
+      "error": "We couldn’t get a response from the AI. Please try again.",
+      "missingQuery": "Tell us what you’re looking for.",
+      "empty": "AI couldn’t find matching jobs. Try refining the description."
     }
   },
   "job": {
