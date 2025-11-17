@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { API_BASE, type JobListItem } from "../../lib/api";
 import { useLocale, useTranslations } from "../../lib/i18n/provider";
@@ -54,8 +54,7 @@ export function JobsAiDialog({ initialCountry, initialRemoteOnly }: JobsAiDialog
   const openDialog = () => setIsOpen(true);
   const closeDialog = () => setIsOpen(false);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async () => {
     const normalizedQuery = query.trim();
     if (!normalizedQuery) {
       setError(tAi("missingQuery"));
@@ -124,7 +123,7 @@ export function JobsAiDialog({ initialCountry, initialRemoteOnly }: JobsAiDialog
                 {tAi("close")}
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <div className="mt-6 space-y-4">
               <label className="flex flex-col gap-2 text-sm">
                 <span className="font-medium">{tAi("queryLabel")}</span>
                 <textarea
@@ -133,6 +132,14 @@ export function JobsAiDialog({ initialCountry, initialRemoteOnly }: JobsAiDialog
                   rows={4}
                   className="input"
                   placeholder={tAi("queryPlaceholder")}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" && !event.shiftKey) {
+                      event.preventDefault();
+                      if (!isLoading && query.trim()) {
+                        void handleSubmit();
+                      }
+                    }
+                  }}
                 />
                 <span className="text-xs text-gray-500">{tAi("queryHint")}</span>
               </label>
@@ -165,13 +172,14 @@ export function JobsAiDialog({ initialCountry, initialRemoteOnly }: JobsAiDialog
                 </label>
               </div>
               <button
-                type="submit"
-                disabled={isLoading}
+                type="button"
+                onClick={handleSubmit}
+                disabled={isLoading || !query.trim()}
                 className="inline-flex min-h-[44px] w-full items-center justify-center rounded-full bg-black px-4 text-sm font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black disabled:opacity-70"
               >
                 {isLoading ? tAi("loading") : tAi("submit")}
               </button>
-            </form>
+            </div>
             <div className="mt-4 space-y-3 text-sm">
               {error && <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-red-800">{error}</div>}
               {result && !error && (
