@@ -3,6 +3,7 @@ import { runWorker } from '../workers/base';
 import { createJobsCsvWorker } from '../workers/jobs-csv-worker';
 import { createJobsHttpWorker } from '../workers/jobs-http-worker';
 import { createJobsJoobleWorker } from '../workers/jobs-jooble-worker';
+import { createJobsRemotiveWorker } from '../workers/jobs-remotive-worker';
 
 const mode = process.argv.find((arg) => arg.startsWith('--mode='))?.split('=')[1] ?? 'csv';
 const locationOverride = process.argv.find((arg) => arg.startsWith('--location='))?.split('=')[1];
@@ -15,6 +16,9 @@ async function main() {
   } else if (mode === 'jooble') {
     console.log(`[workers] Running Jooble jobs worker (location=${locationOverride ?? 'env/default'})...`);
     result = await runWorker(createJobsJoobleWorker(prisma, { location: locationOverride }));
+  } else if (mode === 'remotive') {
+    console.log('[workers] Running Remotive jobs worker...');
+    result = await runWorker(createJobsRemotiveWorker(prisma));
   } else {
     console.log('[workers] Running CSV jobs worker...');
     result = await runWorker(createJobsCsvWorker(prisma));
