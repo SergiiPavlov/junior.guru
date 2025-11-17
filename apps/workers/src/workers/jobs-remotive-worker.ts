@@ -107,7 +107,7 @@ function normalizeTags(rawTags: string[] | null): string[] {
     .filter((tag) => tag.length > 0);
 }
 
-function parseSalary(value?: string | null): { min: number | null; max: number | null; currency: string | null } {
+export function parseSalary(value?: string | null): { min: number | null; max: number | null; currency: string | null } {
   if (!value) {
     return { min: null, max: null, currency: null };
   }
@@ -131,14 +131,44 @@ function parseSalary(value?: string | null): { min: number | null; max: number |
     }
   }
 
-  const numberMatches = normalized.match(/(\d+[\d\s.,]*)/g);
-  if (!numberMatches) {
-    return { min: null, max: null, currency };
-  }
+  const matches = normalized.matchAll(/(\d+[\d\s.,]*)([kKmM])?/g);
+  const numbers: number[] = [];
 
-  const numbers = numberMatches
-    .map((match) => Number.parseInt(match.replace(/[\s.,]/g, ''), 10))
-    .filter((num) => Number.isFinite(num));
+  for (const match of matches) {
+    const rawNumber = match[1];
+    const suffix = match[2] ?? null;
+
+    if (!rawNumber) {
+      continue;
+    }
+
+    const decimalMatch = rawNumber.match(/[.,](\d{1,2})(?!\d)/);
+    const decimalDigits = decimalMatch ? decimalMatch[1].length : 0;
+
+    const digitsOnly = rawNumber.replace(/[\s.,]/g, '');
+    if (!digitsOnly) {
+      continue;
+    }
+
+    let valueNum = Number.parseInt(digitsOnly, 10);
+    if (!Number.isFinite(valueNum)) {
+      continue;
+    }
+
+    if (decimalDigits > 0) {
+      valueNum /= 10 ** decimalDigits;
+    }
+
+    if (suffix) {
+      if (suffix === 'k' || suffix === 'K') {
+        valueNum *= 1_000;
+      } else if (suffix === 'm' || suffix === 'M') {
+        valueNum *= 1_000_000;
+      }
+    }
+
+    numbers.push(valueNum);
+  }
 
   if (numbers.length === 0) {
     return { min: null, max: null, currency };
