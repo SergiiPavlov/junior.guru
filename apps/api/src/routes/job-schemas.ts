@@ -19,6 +19,10 @@ const jobQuerySchema = z.object({
   q: z.string().optional(),
   city: z.string().optional(),
   region: z.string().optional(),
+  country: z
+    .string()
+    .optional()
+    .transform((value) => (value && value.trim().length > 0 ? value.trim().toUpperCase() : undefined)),
   remote: z
     .enum(['true', 'false'])
     .optional()

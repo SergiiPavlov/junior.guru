@@ -61,11 +61,13 @@ export default async function JobsPage({ params, searchParams }: JobsPageProps) 
           { label: tJobs("title") }
         ]}
       />
+      <section className="mt-6 rounded-3xl border border-gray-100 bg-white/80 p-6 md:p-8 shadow-sm">
       <Suspense fallback={<div className="grid gap-4 md:grid-cols-2">{Array.from({ length: 4 }).map((_, index) => (
         <div key={index} className="h-44 w-full animate-pulse rounded-xl bg-gray-200" aria-hidden="true" />
       ))}</div>}>
         <JobsList initialData={initialData} initialFilters={query} />
       </Suspense>
+      </section>
     </>
   );
 }

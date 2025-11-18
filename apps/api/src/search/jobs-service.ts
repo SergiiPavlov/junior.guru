@@ -4,7 +4,7 @@ import { JOBS_INDEX, meiliClient } from './client.js';
 import type { MeiliHttpClient, SearchParams } from './client.js';
 import type { JobSearchDocument } from './jobs-index.js';
 
-type JobQueryInput = ReturnType<typeof jobQuerySchema.parse>;
+export type JobQueryInput = ReturnType<typeof jobQuerySchema.parse>;
 type FindJobsByQuery = typeof findJobsByQuery;
 
 type JobItem = ReturnType<typeof jobItemSchema['parse']>;
@@ -27,6 +27,11 @@ function buildFilters(input: JobQueryInput): SearchParams['filter'] {
 
   if (input.region) {
     filters.push(`region = "${escapeFilterValue(input.region)}"`);
+  }
+
+  if (input.country) {
+    const countryTag = `country:${escapeFilterValue(input.country)}`;
+    filters.push(`tags = "${countryTag}"`);
   }
 
   if (input.remote !== undefined) {

@@ -129,7 +129,7 @@ export default async function JobDetails({ params }: JobDetailsParams) {
         />
         <Link
           href={`/${locale}/jobs`}
-          className="text-sm text-blue-600 underline underline-offset-2 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+          className="text-sm text-blue-600 underline underline-offset-2 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
         >
           {t("back")}
         </Link>
@@ -152,7 +152,7 @@ export default async function JobDetails({ params }: JobDetailsParams) {
           {originalUrl && (
             <a
               href={originalUrl}
-              className="inline-flex min-h-[44px] items-center rounded-full bg-black px-5 text-sm font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+              className="inline-flex min-h-[44px] items-center rounded-full bg-[var(--accent)] px-5 text-sm font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
               target="_blank"
               rel="noopener noreferrer"
             >

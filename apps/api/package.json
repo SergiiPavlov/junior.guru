@@ -4,15 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch --env-file=.env src/index.ts",
+    "dev": "tsx watch --env-file=../../.env src/index.ts",
     "prebuild": "prisma generate --schema ../../packages/db/prisma/schema.prisma",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "prisma:generate": "prisma generate --schema ../../packages/db/prisma/schema.prisma",
     "db:migrate": "prisma migrate deploy --schema ../../packages/db/prisma/schema.prisma && npm run prisma:generate",
-    "db:seed": "npm run prisma:generate && tsx --env-file=.env scripts/seed.ts",
-    "search:reindex": "tsx --env-file=.env scripts/search-reindex.ts",
-    "test": "tsx --env-file=.env --test"
+    "db:seed": "npm run prisma:generate && tsx --env-file=../../.env scripts/seed.ts",
+    "search:reindex": "tsx --env-file=../../.env scripts/search-reindex.ts",
+    "test": "tsx --env-file=../../.env --test"
   },
   "dependencies": {
     "@hono/node-server": "^1.11.0",

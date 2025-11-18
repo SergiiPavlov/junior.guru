@@ -89,10 +89,34 @@ Jooble — первый реальный источник вакансий в э
    В ответе `/api/v1/search/jobs` появятся записи с `sourceName=Jooble`, а страница `/[locale]/jobs` отобразит свежие вакансии.
 3. Чтобы быстро менять страну/регион, используй `JOOBLE_LOCATION_OVERRIDE` либо CLI-параметр:
    ```bash
-   npm run workers:jobs:jooble -- --location=Poland
+    npm run workers:jobs:jooble -- --location=Poland
+    npm run search:reindex
+    ```
+    Override позволяет запускать сбор по Польше, Германии и т.д. без правки `.env`. Для Украины воркер автоматически мапит города на существующие регионы, поэтому текущие фильтры продолжают работать корректно.
+
+## Remote job board API (Remotive)
+Remotive — дополнительный источник только для удалённых вакансий. Воркер использует публичный Remotive API и тот же пайплайн Prisma → Meilisearch, что и другие импортеры.
+
+1. (Опционально) задай параметры запроса в `.env`:
+   ```env
+   REMOTIVE_API_ENDPOINT=https://remotive.com/api/remote-jobs
+   REMOTIVE_CATEGORY=software-dev
+   REMOTIVE_SEARCH=junior
+   REMOTIVE_LIMIT=50
+   ```
+2. Импортируй вакансии и перестрой индекс:
+   ```bash
+   NODE_TLS_REJECT_UNAUTHORIZED=0 npm run -w @junior-ua/workers jobs:run:remotive
    npm run search:reindex
    ```
-   Override позволяет запускать сбор по Польше, Германии и т.д. без правки `.env`. Для Украины воркер автоматически мапит города на существующие регионы, поэтому текущие фильтры продолжают работать корректно.
+   Команда добавит удалённые вакансии Remotive в таблицу `Job` и индекс Meilisearch. Все записи отмечаются тегом `source:remotive`, а при явном указании страны — тегом `country:UA/PL/DE`.
+3. При показе вакансии обязательно ссылайся на оригинальный источник: добавь ссылку вроде «Перейти на оригинал (Remotive)» через `urlOriginal` и явный бейдж/лейбл «Source: Remotive», чтобы не нарушать ToS Remotive.
+
+### Country filters
+
+Каталог вакансий поддерживает параметр `country`, например `https://localhost:3000/uk/jobs?country=UA` или API-запрос `GET /api/v1/jobs?country=PL`.
+Воркеры (CSV, HTTP, Jooble) сохраняют страну в тегах (`country:UA`, `country:PL` и т.д.), а фильтр на стороне API и Meilisearch как раз использует эти теги.
+Если параметр не указан, показываются все вакансии независимо от страны, поэтому текущие ссылки и избранное продолжают работать.
 
 ## Search (Meilisearch)
 1) Подними инфраструктуру:
@@ -114,6 +138,15 @@ Jooble — первый реальный источник вакансий в э
    npm run dev
    ```
    Теперь `/api/v1/search/jobs` и страница `/[locale]/jobs` будут использовать Meilisearch. Если переменные окружения не заданы, API вернёт результаты через Prisma-фолбек.
+
+## AI jobs assistant
+
+- На странице `/[locale]/jobs` появилась кнопка «Допомога ІІ» / «AI help». Вона відкриває модалку з текстовим полем, підказкою країни та чекбоксом remote only.
+- Бекенд-ендпоінт `POST /api/v1/ai/jobs-suggest` перетворює natural language запит на наші фільтри, викликає `searchJobsInIndex` (Meilisearch) і повертає пояснення + список вакансій із власної бази (CSV + HTTP + Jooble + Remotive).
+- Щоб увімкнути асистента локально:
+  1. Додай у `.env.local` значення `OPENAI_API_KEY`, `AI_JOBS_MODEL=gpt-4o-mini` (або інша модель) та `AI_JOBS_ENABLED=true`.
+  2. Перезапусти `npm run dev`, щоб `NEXT_PUBLIC_API_BASE/ai/jobs-suggest` став доступним для фронтенду.
+- Підтримуються лише OpenAI-сумісні Chat Completions (OpenAI/Azure/OpenRouter з прямим сумісним REST). Асистент не звертається до публічних сайтів і працює виключно з нашою базою.
 
 ## Структура
 - `apps/web` — Next.js 15 (App Router), базовые страницы `/[locale]`, `/[locale]/jobs`, `/[locale]/events`

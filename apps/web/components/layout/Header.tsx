@@ -12,19 +12,19 @@ export function Header() {
   const locale = useLocale();
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur shadow-sm">
       <div className="container flex items-center gap-6 py-3">
-        <Link href={`/${locale}`} className="text-xl font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">
+        <Link href={`/${locale}`} className="text-xl font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]">
           Junior UA
         </Link>
         <nav className="flex items-center gap-4 text-sm">
-          <Link className="hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black" href={`/${locale}`}>
+          <Link className="text-sm font-medium text-gray-700 transition-colors hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]" href={`/${locale}`}>
             {t("home")}
           </Link>
-          <Link className="hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black" href={`/${locale}/jobs`}>
+          <Link className="text-sm font-medium text-gray-700 transition-colors hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]" href={`/${locale}/jobs`}>
             {t("jobs")}
           </Link>
-          <Link className="hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black" href={`/${locale}/events`}>
+          <Link className="text-sm font-medium text-gray-700 transition-colors hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]" href={`/${locale}/events`}>
             {t("events")}
           </Link>
         </nav>
