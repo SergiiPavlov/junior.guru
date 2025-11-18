@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { useSpeechInput } from "../../hooks/useSpeechInput";
 import { API_BASE, type JobListItem } from "../../lib/api";
 import { useLocale, useTranslations } from "../../lib/i18n/provider";
 
 import { JobCard } from "./JobCard";
 
 type JobsAiDialogProps = {
-  initialCountry?: string;
-  initialRemoteOnly?: boolean;
+  country?: string;
+  remoteOnly?: boolean;
 };
 
 type AiResponse = {
@@ -17,24 +18,27 @@ type AiResponse = {
   jobs: JobListItem[];
 };
 
-const COUNTRIES = [
-  { value: "any", label: "Any" },
-  { value: "UA", label: "Ukraine" },
-  { value: "PL", label: "Poland" },
-  { value: "DE", label: "Germany" }
-];
-
-export function JobsAiDialog({ initialCountry, initialRemoteOnly }: JobsAiDialogProps) {
+export function JobsAiDialog({ country, remoteOnly }: JobsAiDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [country, setCountry] = useState(initialCountry ?? "any");
-  const [remoteOnly, setRemoteOnly] = useState(Boolean(initialRemoteOnly));
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AiResponse | null>(null);
   const locale = useLocale();
   const tAi = useTranslations("jobs.ai");
-  const tFilters = useTranslations("jobs.filters");
+
+  const handleSpeechResult = useCallback((text: string) => {
+    setQuery((current) => {
+      if (!current.trim()) {
+        return text;
+      }
+      return `${current} ${text}`.trim();
+    });
+  }, []);
+
+  const { isSupported, isRecording, start, stop } = useSpeechInput({
+    onResult: handleSpeechResult
+  });
 
   useEffect(() => {
     if (!isOpen) {
@@ -44,15 +48,11 @@ export function JobsAiDialog({ initialCountry, initialRemoteOnly }: JobsAiDialog
     }
   }, [isOpen]);
 
-  const countryOptions = useMemo(() => {
-    return COUNTRIES.map((item) => ({
-      ...item,
-      label: item.value === "any" ? tFilters("countryAny") : item.label
-    }));
-  }, [tFilters]);
-
   const openDialog = () => setIsOpen(true);
   const closeDialog = () => setIsOpen(false);
+
+  const normalizedCountry = country?.trim() ? country.trim() : undefined;
+  const normalizedRemote = Boolean(remoteOnly);
 
   const handleSubmit = async () => {
     const normalizedQuery = query.trim();
@@ -70,8 +70,8 @@ export function JobsAiDialog({ initialCountry, initialRemoteOnly }: JobsAiDialog
         body: JSON.stringify({
           query: normalizedQuery,
           locale,
-          country: country || "any",
-          remoteOnly
+          country: normalizedCountry,
+          remoteOnly: normalizedRemote
         })
       });
       if (response.status === 503) {
@@ -143,33 +143,34 @@ export function JobsAiDialog({ initialCountry, initialRemoteOnly }: JobsAiDialog
                 />
                 <span className="text-xs text-gray-500">{tAi("queryHint")}</span>
               </label>
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="flex flex-col gap-1 text-sm">
-                  <span className="font-medium">{tFilters("country")}</span>
-                  <select
-                    value={country}
-                    onChange={(event) => setCountry(event.target.value)}
-                    className="input"
-                  >
-                    {countryOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="flex flex-col gap-2 text-sm">
-                  <span className="font-medium">{tFilters("remote")}</span>
-                  <span className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={remoteOnly}
-                      onChange={(event) => setRemoteOnly(event.target.checked)}
-                      className="h-4 w-4"
-                    />
-                    {tAi("remoteHint")}
-                  </span>
-                </label>
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!isSupported) {
+                      return;
+                    }
+                    if (isRecording) {
+                      stop();
+                    } else {
+                      start();
+                    }
+                  }}
+                  disabled={!isSupported}
+                  aria-pressed={isRecording}
+                  aria-label={tAi("voiceInputAria")}
+                  className={`inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full border px-4 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${
+                    isRecording
+                      ? "border-black bg-black text-white"
+                      : "border-black/10 text-gray-900"
+                  } disabled:cursor-not-allowed disabled:opacity-50`}
+                >
+                  <MicrophoneIcon className="h-4 w-4" />
+                  {isRecording ? tAi("voiceInputRecording") : tAi("voiceInput")}
+                </button>
+                {!isSupported && (
+                  <p className="text-xs text-gray-500">{tAi("voiceUnsupported")}</p>
+                )}
               </div>
               <button
                 type="button"
@@ -204,5 +205,30 @@ export function JobsAiDialog({ initialCountry, initialRemoteOnly }: JobsAiDialog
         </div>
       )}
     </div>
+  );
+}
+
+type MicrophoneIconProps = {
+  className?: string;
+};
+
+function MicrophoneIcon({ className }: MicrophoneIconProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" />
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+      <path d="M12 19v4" />
+      <path d="M8 23h8" />
+    </svg>
   );
 }
