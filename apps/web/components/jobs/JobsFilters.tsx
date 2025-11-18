@@ -172,7 +172,7 @@ export function JobsFilters() {
         </div>
       </div>
       <div className="border-t border-dashed border-black/10 pt-4">
-        <JobsAiDialog initialCountry={currentValues.country || undefined} initialRemoteOnly={currentValues.remote} />
+        <JobsAiDialog country={currentValues.country || undefined} remoteOnly={currentValues.remote} />
       </div>
     </form>
   );
