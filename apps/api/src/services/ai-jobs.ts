@@ -82,6 +82,42 @@ const ANY_COUNTRY_VALUES = [
   'все страны'
 ];
 
+const GENERIC_QUERY_TOKENS = new Set([
+  'job',
+  'jobs',
+  'work',
+  'vacancy',
+  'vacancies',
+  'find',
+  'search',
+  'подобрать',
+  'подбор',
+  'найти',
+  'підбір',
+  'пошук',
+  'робота',
+  'роботи',
+  'роботу',
+  'работа',
+  'работу',
+  'работы',
+  'вакансія',
+  'вакансії',
+  'вакансію',
+  'вакансій',
+  'вакансии',
+  'вакансия',
+  'вакансий'
+]);
+
+function isGenericSearchQuery(text?: string | null): boolean {
+  if (!text) return true;
+  const normalized = text.toLowerCase().replace(/[.,!?]/g, ' ');
+  const tokens = normalized.split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return true;
+  return tokens.every((token) => GENERIC_QUERY_TOKENS.has(token));
+}
+
 function getFetch(): FetchImpl {
   const globalWithFetch = globalThis as { fetch?: FetchImpl } & Record<string, unknown>;
   if (typeof globalWithFetch.fetch !== 'function') {
@@ -251,8 +287,22 @@ function buildSearchQuery(input: AiJobsRequest, filters: SuggestionFilters): Job
         ? true
         : undefined;
 
+  const rawQ = normalizeText(filters.q);
+  let q: string | undefined = rawQ;
+
+  if (isGenericSearchQuery(q)) {
+    q = undefined;
+  }
+
+  if (!q && Array.isArray(filters.skills) && filters.skills.length > 0) {
+    const skillsText = normalizeText(filters.skills.join(' '));
+    if (skillsText && !isGenericSearchQuery(skillsText)) {
+      q = skillsText;
+    }
+  }
+
   return {
-    q: normalizeText(filters.q) ?? input.query,
+    q,
     city: undefined,
     region: undefined,
     country,
@@ -272,8 +322,19 @@ export async function suggestJobs(rawBody: unknown, deps: SuggestJobsDeps = defa
   const input = aiJobsRequestSchema.parse(rawBody);
   const createCompletion = deps.createChatCompletion();
   const filters = await requestFiltersFromAI(createCompletion, input);
-  const searchQuery = buildSearchQuery(input, filters);
-  const result = await deps.searchJobsInIndex(searchQuery);
+  let searchQuery = buildSearchQuery(input, filters);
+  let result = await deps.searchJobsInIndex(searchQuery);
+
+  if (result.total === 0) {
+    searchQuery = {
+      ...searchQuery,
+      q: undefined,
+      salaryMin: undefined,
+      experience: undefined
+    };
+    result = await deps.searchJobsInIndex(searchQuery);
+  }
+
   const explanation = buildExplanation(input.locale, result.items.length, searchQuery);
 
   return aiJobsResponseSchema.parse({
