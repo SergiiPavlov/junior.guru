@@ -63,6 +63,25 @@ const defaultDeps: SuggestJobsDeps = {
   searchJobsInIndex
 };
 
+const COUNTRY_ALIASES: Record<string, string> = {
+  ukraine: 'UA',
+  'україна': 'UA',
+  'украина': 'UA',
+  poland: 'PL',
+  polska: 'PL',
+  germany: 'DE',
+  deutschland: 'DE'
+};
+
+const ANY_COUNTRY_VALUES = [
+  'any',
+  'all',
+  'all countries',
+  'будь-яка країна',
+  'всі країни',
+  'все страны'
+];
+
 function getFetch(): FetchImpl {
   const globalWithFetch = globalThis as { fetch?: FetchImpl } & Record<string, unknown>;
   if (typeof globalWithFetch.fetch !== 'function') {
@@ -96,11 +115,29 @@ function createChatCompletion(): ChatCompletionClient {
 
 function normalizeCountry(input?: string | null): string | undefined {
   if (!input) return undefined;
-  const normalized = input.trim();
-  if (!normalized || normalized.toLowerCase() === 'any') {
+  const raw = input.trim();
+  if (!raw) return undefined;
+
+  const lower = raw.toLowerCase();
+
+  // Treat "any / all countries" as "no country filter"
+  if (ANY_COUNTRY_VALUES.includes(lower)) {
     return undefined;
   }
-  return normalized.toUpperCase();
+
+  // Map common human-readable names to 2-letter codes
+  const alias = COUNTRY_ALIASES[lower];
+  if (alias) {
+    return alias;
+  }
+
+  // If it already looks like a 2-letter code, normalize to upper-case
+  if (/^[a-z]{2}$/i.test(raw)) {
+    return raw.toUpperCase();
+  }
+
+  // For anything else (e.g. "Europe"), it's safer to NOT filter by country
+  return undefined;
 }
 
 function normalizeSkills(input?: string[] | null): string[] {
@@ -134,11 +171,14 @@ You MUST respond ONLY with a JSON object with these fields:
 - q: string | null
 - skills: string[]
 - remote: boolean | null
-- country: string | null
+- country: string | null  // two-letter country code like "UA", "PL", "DE"; use null if unsure or if the user wants any country
 - salaryMin: number | null
 - experience: string | null
 
-Do not add any explanations, just raw JSON.`;
+Rules:
+- If the user mentions a country, convert it to a 2-letter ISO-like code used for job tags (e.g. "Ukraine" -> "UA", "Poland" -> "PL").
+- If the user says they can work in any / all countries, or you are not sure about the country, set country to null.
+- Do not add any explanations, just raw JSON.`;
 }
 
 function buildExplanation(locale: AiJobsRequest['locale'], count: number, query: JobQueryInput) {
