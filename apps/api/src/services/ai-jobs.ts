@@ -1,7 +1,7 @@
 import { env } from '../env.js';
-import { jobItemSchema, jobListResponseSchema } from '../routes/job-schemas.js';
+import { jobItemSchema } from '../routes/job-schemas.js';
 import { searchJobsInIndex, type JobQueryInput } from '../search/jobs-service.js';
-import { z } from '../lib/zod.js';
+import { z, type infer as ZodInfer } from '../lib/zod.js';
 
 const aiJobsRequestSchema = z.object({
   query: z.string().min(1),
@@ -12,12 +12,12 @@ const aiJobsRequestSchema = z.object({
 
 const aiJobsResponseSchema = z.object({
   explanation: z.string(),
-  jobs: jobListResponseSchema.shape.items
+  jobs: z.array(jobItemSchema)
 });
 
-type AiJobsRequest = z.infer<typeof aiJobsRequestSchema>;
+type AiJobsRequest = ZodInfer<typeof aiJobsRequestSchema>;
 
-type AiJobsResponse = z.infer<typeof aiJobsResponseSchema>;
+type AiJobsResponse = ZodInfer<typeof aiJobsResponseSchema>;
 
 type SuggestionFilters = {
   q?: string | null;
@@ -183,7 +183,7 @@ Preferred country hint: ${input.country ?? 'none'}
 Remote only hint: ${input.remoteOnly}`;
 
   const completion = await createCompletion({
-    model: env.AI_JOBS_MODEL,
+    model: env.AI_JOBS_MODEL || 'gpt-4o-mini',
     messages: [
       { role: 'system', content: buildSystemPrompt() },
       { role: 'user', content: userMessage }
