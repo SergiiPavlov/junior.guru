@@ -50,7 +50,9 @@
       "perPage": "Per page",
       "apply": "Apply",
       "reset": "Reset",
-      "keywordHint": "Search by job title, company or tech stack"
+      "keywordHint": "Search by job title, company or tech stack",
+      "salaryPresetPlaceholder": "Preset amounts",
+      "openSuggestions": "Choose from list"
     },
     "sortOptions": {
       "recent": "Newest",
@@ -79,7 +81,7 @@
       "retry": "Try again"
     },
     "ai": {
-      "button": "AI help",
+      "button": "AI helper",
       "buttonHint": "Describe your ideal job — AI will pick filters.",
       "title": "AI assistant",
       "description": "Share what you’re looking for and we’ll translate it into filters on our own job index.",
