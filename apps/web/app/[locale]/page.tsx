@@ -1,11 +1,10 @@
+import Image from "next/image";
 import Link from "next/link";
 
-import { fetchJobsList } from "../../lib/api";
 import { isLocale } from "../../lib/i18n/config";
 import { getTranslator } from "../../lib/i18n/server";
 import { createPageMetadata, defaultMetadata } from "../../lib/metadata";
 
-import type { JobListResponse, JobsQueryInput } from "../../lib/api";
 import type { Metadata } from "next";
 
 type HomePageProps = {
@@ -30,80 +29,64 @@ export async function generateMetadata({ params }: HomePageProps): Promise<Metad
   });
 }
 
+
 export default async function Home({ params }: HomePageProps) {
   const { locale } = await params;
+
   if (!isLocale(locale)) {
     throw new Error("Unsupported locale");
   }
 
   const tHome = await getTranslator(locale, "home");
-  const tJobs = await getTranslator(locale, "jobs");
-
-  let jobsResponse: JobListResponse = { items: [], page: 1, perPage: 4, total: 0 };
-  try {
-    jobsResponse = await fetchJobsList(
-      {
-        page: 1,
-        perPage: 4,
-        sort: "recent",
-        skills: [],
-        tags: [],
-        remote: undefined,
-        q: undefined,
-        city: undefined,
-        region: undefined,
-        salaryMin: undefined,
-        currency: undefined,
-        experience: undefined
-      } satisfies JobsQueryInput,
-      { revalidate }
-    );
-  } catch (error) {
-    console.error("Failed to load latest jobs", error);
-  }
 
   return (
-    <div className="space-y-10">
-      <section className="space-y-4">
-        <h1 className="text-3xl font-semibold tracking-tight">{tHome("heroTitle")}</h1>
-        <p className="text-lg text-gray-600">{tHome("heroSubtitle")}</p>
-        <div className="flex flex-wrap gap-3">
+    <main className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center px-4">
+      <div className="flex w-full max-w-3xl flex-col items-center text-center space-y-6">
+        <Image
+          src="/logo-juy.svg"
+          alt="Junior UA"
+          width={160}
+          height={160}
+          className="mb-4"
+          priority
+        />
+
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight">
+          {tHome("heroTitle")}
+        </h1>
+
+        <p className="text-base sm:text-lg text-gray-600">
+          {tHome("heroSubtitle")}
+        </p>
+
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link
             href={`/${locale}/jobs`}
-            className="inline-flex min-h-[44px] items-center rounded-full bg-black px-5 py-2 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            className="inline-flex min-h-[44px] items-center justify-center rounded-full
+                       bg-[var(--accent)] px-6 py-2 text-sm font-semibold text-white
+                       shadow-sm hover:bg-[var(--accent-dark)]
+                       focus-visible:outline focus-visible:outline-2
+                       focus-visible:outline-offset-2
+                       focus-visible:outline-[var(--accent)]"
           >
             {tHome("ctaJobs")}
           </Link>
+
           <Link
             href={`/${locale}/events`}
-            className="inline-flex min-h-[44px] items-center rounded-full border border-black/20 px-5 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            className="inline-flex min-h-[44px] items-center justify-center rounded-full
+                       border border-[var(--accent)] bg-white px-6 py-2
+                       text-sm font-semibold text-[var(--accent)]
+                       hover:bg-[var(--accent-soft)]
+                       focus-visible:outline focus-visible:outline-2
+                       focus-visible:outline-offset-2
+                       focus-visible:outline-[var(--accent)]"
           >
             {tHome("ctaEvents")}
           </Link>
         </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">{tHome("latestJobs")}</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          {jobsResponse.items.map((job) => (
-            <article key={job.id} className="card flex flex-col gap-2">
-              <div className="text-sm text-gray-500">{job.companyName ?? "—"}</div>
-              <h3 className="text-lg font-semibold leading-tight">{job.title}</h3>
-              <div className="text-sm text-gray-600">
-                {job.city ?? (job.remote ? "Remote" : "—")}
-              </div>
-              <Link
-                href={`/${locale}/jobs/${job.id}`}
-                className="mt-2 inline-flex min-h-[44px] items-center text-sm font-medium text-blue-600 underline"
-              >
-                {tJobs("openDetails")}
-              </Link>
-            </article>
-          ))}
-          {jobsResponse.items.length === 0 && <div className="muted">{tHome("empty")}</div>}
-        </div>
-      </section>
-    </div>
+      </div>
+    </main>
   );
 }
+
