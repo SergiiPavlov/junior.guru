@@ -97,28 +97,33 @@ export function JobsAiDialog({ country, remoteOnly }: JobsAiDialogProps) {
       <button
         type="button"
         onClick={openDialog}
-        className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-black/10 px-4 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+        className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-black/10 px-4 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
       >
         {tAi("button")}
       </button>
       <p className="text-xs text-gray-500">{tAi("buttonHint")}</p>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--accent)]/50 px-4 py-8">
           <div className="absolute inset-0" onClick={closeDialog} aria-hidden="true" />
           <div
             role="dialog"
             aria-modal="true"
-            className="relative z-10 max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl"
+            className="relative z-10 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-gray-100 bg-white/95 p-6 md:p-7 shadow-2xl"
           >
             <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-base font-semibold text-gray-900">{tAi("title")}</p>
-                <p className="mt-1 text-sm text-gray-600">{tAi("description")}</p>
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">
+                  <span aria-hidden="true">✨</span>
+                </div>
+                <div>
+                  <p className="text-base md:text-lg font-semibold text-gray-900">{tAi("title")}</p>
+                  <p className="mt-1 text-sm text-gray-600">{tAi("description")}</p>
+                </div>
               </div>
               <button
                 type="button"
                 onClick={closeDialog}
-                className="rounded-full border border-black/10 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="inline-flex min-h-[40px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
               >
                 {tAi("close")}
               </button>
@@ -159,10 +164,10 @@ export function JobsAiDialog({ country, remoteOnly }: JobsAiDialogProps) {
                   disabled={!isSupported}
                   aria-pressed={isRecording}
                   aria-label={tAi("voiceInputAria")}
-                  className={`inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full border px-4 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${
+                  className={`inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full border px-4 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
                     isRecording
-                      ? "border-black bg-black text-white"
-                      : "border-black/10 text-gray-900"
+                      ? "border-[var(--accent)] bg-[var(--accent)] text-white"
+                      : "border-[var(--accent)] bg-white text-[var(--accent)] hover:bg-[var(--accent-soft)]"
                   } disabled:cursor-not-allowed disabled:opacity-50`}
                 >
                   <MicrophoneIcon className="h-4 w-4" />
@@ -176,15 +181,15 @@ export function JobsAiDialog({ country, remoteOnly }: JobsAiDialogProps) {
                 type="button"
                 onClick={handleSubmit}
                 disabled={isLoading || !query.trim()}
-                className="inline-flex min-h-[44px] w-full items-center justify-center rounded-full bg-black px-4 text-sm font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black disabled:opacity-70"
+                className="inline-flex min-h-[44px] w-full items-center justify-center rounded-full bg-[var(--accent)] px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--accent-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isLoading ? tAi("loading") : tAi("submit")}
               </button>
             </div>
             <div className="mt-4 space-y-3 text-sm">
-              {error && <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-red-800">{error}</div>}
+              {error && <div className="mt-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
               {result && !error && (
-                <div className="space-y-4">
+                <div className="mt-4 space-y-4 rounded-2xl bg-gray-50/80 p-5">
                   <p className="text-gray-700">{result.explanation}</p>
                   {result.jobs.length === 0 && (
                     <p className="rounded-lg border border-dashed border-gray-200 bg-gray-50 p-4 text-center text-gray-600">
