@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -18,6 +18,11 @@ import { JobsAiDialog } from "./JobsAiDialog";
 
 const SORT_OPTIONS = ["recent", "relevant", "salary_desc", "salary_asc"] as const;
 const PER_PAGE_OPTIONS = [10, 20, 30, 40, 50];
+const baseInputClasses =
+  "w-full min-h-[44px] rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]";
+const dropdownPanelClasses =
+  "absolute left-0 right-0 z-20 mt-2 max-h-64 overflow-auto rounded-2xl bg-slate-900 p-2 text-slate-50 shadow-xl ring-1 ring-slate-800";
+const dropdownOptionBaseClasses = "flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors";
 
 export function JobsFilters() {
   const router = useRouter();
@@ -49,6 +54,10 @@ export function JobsFilters() {
   const [salaryMinValue, setSalaryMinValue] = useState(currentValues.salaryMin);
   const [isSkillsDropdownOpen, setIsSkillsDropdownOpen] = useState(false);
   const [isTagsDropdownOpen, setIsTagsDropdownOpen] = useState(false);
+  const [isSalaryDropdownOpen, setIsSalaryDropdownOpen] = useState(false);
+  const skillsDropdownRef = useRef<HTMLDivElement | null>(null);
+  const tagsDropdownRef = useRef<HTMLDivElement | null>(null);
+  const salaryDropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setSkillsValue(currentValues.skills);
@@ -115,6 +124,9 @@ export function JobsFilters() {
     setSkillsValue("");
     setTagsValue("");
     setSalaryMinValue("");
+    setIsSkillsDropdownOpen(false);
+    setIsTagsDropdownOpen(false);
+    setIsSalaryDropdownOpen(false);
     router.push("?");
   }, [router]);
 
@@ -122,6 +134,57 @@ export function JobsFilters() {
     const localeKey = locale === "en" ? "en-US" : "uk-UA";
     return new Intl.NumberFormat(localeKey);
   }, [locale]);
+
+  useEffect(() => {
+    if (!isSkillsDropdownOpen && !isTagsDropdownOpen && !isSalaryDropdownOpen) {
+      return;
+    }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsSkillsDropdownOpen(false);
+        setIsTagsDropdownOpen(false);
+        setIsSalaryDropdownOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isSkillsDropdownOpen, isTagsDropdownOpen, isSalaryDropdownOpen]);
+
+  useEffect(() => {
+    if (!isSkillsDropdownOpen && !isTagsDropdownOpen && !isSalaryDropdownOpen) {
+      return;
+    }
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        isSkillsDropdownOpen &&
+        skillsDropdownRef.current &&
+        !skillsDropdownRef.current.contains(target)
+      ) {
+        setIsSkillsDropdownOpen(false);
+      }
+      if (
+        isTagsDropdownOpen &&
+        tagsDropdownRef.current &&
+        !tagsDropdownRef.current.contains(target)
+      ) {
+        setIsTagsDropdownOpen(false);
+      }
+      if (
+        isSalaryDropdownOpen &&
+        salaryDropdownRef.current &&
+        !salaryDropdownRef.current.contains(target)
+      ) {
+        setIsSalaryDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+    };
+  }, [isSkillsDropdownOpen, isTagsDropdownOpen, isSalaryDropdownOpen]);
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-4 rounded-2xl border border-black/10 bg-white p-4">
@@ -131,7 +194,7 @@ export function JobsFilters() {
           <input
             name="q"
             defaultValue={currentValues.q}
-            className="input"
+            className={baseInputClasses}
             placeholder={t("keyword")}
             list="jobs-keyword-suggestions"
           />
@@ -147,7 +210,7 @@ export function JobsFilters() {
           <input
             name="city"
             defaultValue={currentValues.city}
-            className="input"
+            className={baseInputClasses}
             placeholder="Kyiv"
             list="jobs-city-suggestions"
           />
@@ -159,11 +222,16 @@ export function JobsFilters() {
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("region")}</span>
-          <input name="region" defaultValue={currentValues.region} className="input" placeholder="UA-30" />
+          <input
+            name="region"
+            defaultValue={currentValues.region}
+            className={baseInputClasses}
+            placeholder="UA-30"
+          />
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("country")}</span>
-          <select name="country" defaultValue={currentValues.country} className="input">
+          <select name="country" defaultValue={currentValues.country} className={baseInputClasses}>
             <option value="">{t("countryAny")}</option>
             <option value="UA">Ukraine</option>
             <option value="PL">Poland</option>
@@ -177,7 +245,7 @@ export function JobsFilters() {
               type="checkbox"
               name="remote"
               defaultChecked={currentValues.remote}
-              className="h-4 w-4"
+              className="h-4 w-4 rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"
               aria-label={t("remote")}
             />
             {t("remote")}
@@ -188,127 +256,171 @@ export function JobsFilters() {
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("skills")}</span>
-          <div className="relative">
+          <div className="relative" ref={skillsDropdownRef}>
             <input
               name="skills"
               value={skillsValue}
               onChange={(event) => setSkillsValue(event.target.value)}
-              className="input pr-10"
-              placeholder="react,typescript"
-              list="jobs-skills-suggestions"
+              className={`${baseInputClasses} pr-12`}
+              placeholder="react, typescript"
             />
             <button
               type="button"
               aria-label={t("openSuggestions")}
               aria-expanded={isSkillsDropdownOpen}
+              aria-controls="jobs-skills-suggestions-panel"
               onClick={() => setIsSkillsDropdownOpen((prev) => !prev)}
-              className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
+              className="absolute inset-y-0 right-0 flex items-center rounded-r-full px-4 text-slate-500"
             >
               <ChevronDownIcon className={`h-4 w-4 transition-transform ${isSkillsDropdownOpen ? "rotate-180" : ""}`} />
             </button>
             {isSkillsDropdownOpen && (
-              <div className="absolute right-0 z-20 mt-2 w-60 rounded-2xl border border-black/10 bg-white p-3 shadow-xl">
-                <div className="max-h-48 space-y-2 overflow-y-auto">
-                  {SKILL_SUGGESTIONS.map((skill) => (
-                    <label key={skill} className="flex items-center gap-2 text-sm">
+              <div
+                id="jobs-skills-suggestions-panel"
+                role="listbox"
+                aria-multiselectable="true"
+                className={dropdownPanelClasses}
+              >
+                {SKILL_SUGGESTIONS.map((skill) => {
+                  const isSelected = selectedSkills.some(
+                    (item) => item.toLowerCase() === skill.toLowerCase()
+                  );
+                  return (
+                    <label
+                      key={skill}
+                      className={`${dropdownOptionBaseClasses} ${
+                        isSelected ? "bg-slate-800 font-semibold" : "hover:bg-slate-800/70"
+                      }`}
+                    >
                       <input
                         type="checkbox"
-                        checked={selectedSkills.some((item) => item.toLowerCase() === skill.toLowerCase())}
-                        onChange={() => setSkillsValue((prev) => toggleCommaSeparatedValue(prev, skill))}
+                        className="h-4 w-4 rounded border-slate-500 text-[var(--accent)] focus:ring-[var(--accent)]"
+                        checked={isSelected}
+                        onChange={() =>
+                          setSkillsValue((prev) => toggleCommaSeparatedValue(prev, skill))
+                        }
                       />
                       <span>{skill}</span>
                     </label>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
             )}
-            <datalist id="jobs-skills-suggestions">
-              {SKILL_SUGGESTIONS.map((option) => (
-                <option key={option} value={option} />
-              ))}
-            </datalist>
           </div>
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("tags")}</span>
-          <div className="relative">
+          <div className="relative" ref={tagsDropdownRef}>
             <input
               name="tags"
               value={tagsValue}
               onChange={(event) => setTagsValue(event.target.value)}
-              className="input pr-10"
-              placeholder="frontend"
-              list="jobs-tags-suggestions"
+              className={`${baseInputClasses} pr-12`}
+              placeholder="frontend, remote"
             />
             <button
               type="button"
               aria-label={t("openSuggestions")}
               aria-expanded={isTagsDropdownOpen}
+              aria-controls="jobs-tags-suggestions-panel"
               onClick={() => setIsTagsDropdownOpen((prev) => !prev)}
-              className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
+              className="absolute inset-y-0 right-0 flex items-center rounded-r-full px-4 text-slate-500"
             >
               <ChevronDownIcon className={`h-4 w-4 transition-transform ${isTagsDropdownOpen ? "rotate-180" : ""}`} />
             </button>
             {isTagsDropdownOpen && (
-              <div className="absolute right-0 z-20 mt-2 w-60 rounded-2xl border border-black/10 bg-white p-3 shadow-xl">
-                <div className="max-h-48 space-y-2 overflow-y-auto">
-                  {TAG_SUGGESTIONS.map((tag) => (
-                    <label key={tag} className="flex items-center gap-2 text-sm">
+              <div
+                id="jobs-tags-suggestions-panel"
+                role="listbox"
+                aria-multiselectable="true"
+                className={dropdownPanelClasses}
+              >
+                {TAG_SUGGESTIONS.map((tag) => {
+                  const isSelected = selectedTags.some(
+                    (item) => item.toLowerCase() === tag.toLowerCase()
+                  );
+                  return (
+                    <label
+                      key={tag}
+                      className={`${dropdownOptionBaseClasses} ${
+                        isSelected ? "bg-slate-800 font-semibold" : "hover:bg-slate-800/70"
+                      }`}
+                    >
                       <input
                         type="checkbox"
-                        checked={selectedTags.some((item) => item.toLowerCase() === tag.toLowerCase())}
-                        onChange={() => setTagsValue((prev) => toggleCommaSeparatedValue(prev, tag))}
+                        className="h-4 w-4 rounded border-slate-500 text-[var(--accent)] focus:ring-[var(--accent)]"
+                        checked={isSelected}
+                        onChange={() =>
+                          setTagsValue((prev) => toggleCommaSeparatedValue(prev, tag))
+                        }
                       />
                       <span>{tag}</span>
                     </label>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
             )}
-            <datalist id="jobs-tags-suggestions">
-              {TAG_SUGGESTIONS.map((option) => (
-                <option key={option} value={option} />
-              ))}
-            </datalist>
           </div>
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("salaryMin")}</span>
-          <div className="flex gap-2">
+          <div className="relative" ref={salaryDropdownRef}>
             <input
               name="salaryMin"
               value={salaryMinValue}
               onChange={(event) => setSalaryMinValue(event.target.value)}
-              className="input"
+              className={`${baseInputClasses} pr-32`}
               type="number"
               min={0}
               step={1000}
             />
-            <select
-              className="w-32 rounded-xl border border-black/10 bg-white px-3 py-2 text-sm"
-              defaultValue=""
-              aria-label={t("salaryPresetPlaceholder")}
-              onChange={(event) => {
-                const preset = event.target.value;
-                if (!preset) {
-                  return;
-                }
-                setSalaryMinValue(preset);
-                event.currentTarget.value = "";
-              }}
+            <button
+              type="button"
+              aria-expanded={isSalaryDropdownOpen}
+              aria-controls="jobs-salary-suggestions-panel"
+              onClick={() => setIsSalaryDropdownOpen((prev) => !prev)}
+              className="absolute inset-y-1 right-1 flex items-center gap-1 rounded-full bg-slate-100 px-3 text-xs font-semibold text-slate-600 hover:bg-slate-200"
             >
-              <option value="">{t("salaryPresetPlaceholder")}</option>
-              {SALARY_PRESETS.map((amount) => (
-                <option key={amount} value={amount}>
-                  {salaryFormatter.format(amount)}
-                </option>
-              ))}
-            </select>
+              {t("salaryPresetPlaceholder")}
+              <ChevronDownIcon className={`h-3.5 w-3.5 transition-transform ${isSalaryDropdownOpen ? "rotate-180" : ""}`} />
+            </button>
+            {isSalaryDropdownOpen && (
+              <div
+                id="jobs-salary-suggestions-panel"
+                role="listbox"
+                className={dropdownPanelClasses}
+              >
+                {SALARY_PRESETS.map((amount) => {
+                  const amountString = amount.toString();
+                  const isSelected = salaryMinValue.trim() === amountString;
+                  return (
+                    <button
+                      type="button"
+                      key={amount}
+                      className={`${dropdownOptionBaseClasses} w-full text-left ${
+                        isSelected ? "bg-slate-800 font-semibold" : "hover:bg-slate-800/70"
+                      }`}
+                      onClick={() => {
+                        setSalaryMinValue(amountString);
+                        setIsSalaryDropdownOpen(false);
+                      }}
+                    >
+                      {salaryFormatter.format(amount)}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("currency")}</span>
-          <input name="currency" defaultValue={currentValues.currency} className="input" placeholder="UAH" />
+          <input
+            name="currency"
+            defaultValue={currentValues.currency}
+            className={baseInputClasses}
+            placeholder="UAH"
+          />
         </label>
       </div>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
@@ -317,7 +429,7 @@ export function JobsFilters() {
           <input
             name="experience"
             defaultValue={currentValues.experience}
-            className="input"
+            className={baseInputClasses}
             placeholder="junior"
             list="jobs-level-options"
           />
@@ -329,7 +441,7 @@ export function JobsFilters() {
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("sort")}</span>
-          <select name="sort" defaultValue={currentValues.sort} className="input">
+          <select name="sort" defaultValue={currentValues.sort} className={baseInputClasses}>
             {SORT_OPTIONS.map((option) => (
               <option key={option} value={option}>
                 {tSort(option)}
@@ -339,7 +451,7 @@ export function JobsFilters() {
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("perPage")}</span>
-          <select name="perPage" defaultValue={currentValues.perPage} className="input">
+          <select name="perPage" defaultValue={currentValues.perPage} className={baseInputClasses}>
             {PER_PAGE_OPTIONS.map((option) => (
               <option key={option} value={option}>
                 {option}
