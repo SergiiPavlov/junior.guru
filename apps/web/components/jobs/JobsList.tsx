@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useSearchParams } from "next/navigation";
 
@@ -11,6 +11,7 @@ import { Skeleton } from "../common/Skeleton";
 
 import { JobCard } from "./JobCard";
 import { JobsFilters } from "./JobsFilters";
+import { JobsPagination } from "./JobsPagination";
 
 import type { JobListResponse, JobsQueryInput } from "../../lib/api";
 
@@ -26,10 +27,17 @@ function JobsListContent({ initialData, initialFilters }: { initialData: JobList
   const [retryToken, setRetryToken] = useState(0);
   const initialFiltersRef = useRef(initialFilters);
 
+  useEffect(() => {
+    initialFiltersRef.current = initialFilters;
+    setData(initialData);
+  }, [initialData, initialFilters]);
+
   const filters = useMemo(() => {
     const entries = Object.fromEntries(searchParams.entries());
     return parseJobsQuery(entries);
   }, [searchParams]);
+
+  const searchParamsString = useMemo(() => searchParams.toString(), [searchParams]);
 
   useEffect(() => {
     const initial = initialFiltersRef.current;
@@ -57,9 +65,24 @@ function JobsListContent({ initialData, initialFilters }: { initialData: JobList
     return () => controller.abort();
   }, [filters, retryToken]);
 
-  const totalPages = Math.max(1, Math.ceil(data.total / data.perPage));
+  const totalPages = data.totalPages ?? Math.max(1, Math.ceil(data.total / data.perPage));
   const hasJobs = data.items.length > 0;
   const showList = !error;
+  const showPagination = showList && hasJobs && totalPages > 1;
+
+  const makePageHref = useCallback(
+    (targetPage: number) => {
+      const normalized = Math.min(Math.max(1, targetPage), totalPages);
+      const params = new URLSearchParams(searchParamsString);
+      if (normalized <= 1) {
+        params.delete("page");
+      } else {
+        params.set("page", String(normalized));
+      }
+      return params.toString() ? `?${params.toString()}` : "?";
+    },
+    [searchParamsString, totalPages]
+  );
 
   return (
     <div className="space-y-6">
@@ -103,6 +126,13 @@ function JobsListContent({ initialData, initialFilters }: { initialData: JobList
             ))}
           </ul>
         </div>
+      )}
+      {showPagination && (
+        <JobsPagination
+          page={data.page}
+          totalPages={totalPages}
+          makeHref={makePageHref}
+        />
       )}
       <div className="text-sm text-gray-500">
         {t("pagination.page", {

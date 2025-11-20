@@ -1,0 +1,168 @@
+{
+  "meta": {
+    "title": "Junior UA",
+    "description": "Jobs and events for juniors in Ukraine"
+  },
+  "navigation": {
+    "home": "Home",
+    "jobs": "Jobs",
+    "events": "Events",
+    "about": "About",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "language": {
+    "label": "Language",
+    "switchTo": {
+      "uk": "Ukrainian",
+      "en": "English"
+    }
+  },
+  "footer": {
+    "copyright": "© {year} Junior UA — preview"
+  },
+  "home": {
+    "heroTitle": "Welcome to Junior UA",
+    "heroSubtitle": "A platform for juniors: jobs, events, community.",
+    "ctaJobs": "Browse jobs",
+    "ctaEvents": "Events",
+    "latestJobs": "Latest jobs",
+    "empty": "No data yet. Start the API."
+  },
+  "jobs": {
+    "title": "Jobs",
+    "results_summary": "Found {count} jobs",
+    "filters": {
+      "keyword": "Keyword",
+      "city": "City",
+      "region": "Region",
+      "remote": "Remote",
+      "remoteHint": "Show only roles that can be done remotely.",
+      "country": "Country",
+      "countryAny": "Any country",
+      "countryHint": "Start with Ukraine, then explore other countries.",
+      "skills": "Skills",
+      "tags": "Tags",
+      "salaryMin": "Salary from",
+      "currency": "Currency",
+      "experience": "Experience",
+      "sort": "Sort",
+      "perPage": "Per page",
+      "apply": "Apply",
+      "reset": "Reset",
+      "keywordHint": "Search by job title, company or tech stack",
+      "salaryPresetPlaceholder": "Preset amounts",
+      "openSuggestions": "Choose from list"
+    },
+    "sortOptions": {
+      "recent": "Newest",
+      "relevant": "Relevant",
+      "salary_desc": "Salary ↓",
+      "salary_asc": "Salary ↑"
+    },
+    "empty": {
+      "title": "No jobs found for your query",
+      "hints": {
+        "filters": "Try removing some filters",
+        "keyword": "Try a different keyword",
+        "location": "Choose another city or Remote"
+      }
+    },
+    "openOriginal": "Open original",
+    "openDetails": "View",
+    "salary": "{min}–{max} {currency}",
+    "salaryFrom": "from {min} {currency}",
+    "pagination": {
+      "page": "Page {page} of {pages}"
+    },
+    "error": {
+      "title": "We couldn’t load jobs right now",
+      "description": "Something went wrong while loading the jobs list. Please try again in a moment.",
+      "retry": "Try again"
+    },
+    "ai": {
+      "button": "AI helper",
+      "buttonHint": "Describe your ideal job — AI will pick filters.",
+      "title": "AI assistant",
+      "description": "Share what you’re looking for and we’ll translate it into filters on our own job index.",
+      "queryLabel": "What do you need?",
+      "queryPlaceholder": "e.g. Junior React, remote, 25k+ UAH, Poland",
+      "queryHint": "Mention tech stack, salary expectations, country or remote mode.",
+      "remoteHint": "Prioritize remote-friendly roles",
+      "voiceInput": "Speak",
+      "voiceInputRecording": "Stop recording",
+      "voiceInputAria": "Dictate job description",
+      "voiceUnsupported": "Voice input is not supported in this browser",
+      "submit": "Ask AI",
+      "loading": "Asking AI…",
+      "close": "Close",
+      "notConfigured": "AI assistant is not configured right now.",
+      "error": "We couldn’t get a response from the AI. Please try again.",
+      "missingQuery": "Tell us what you’re looking for.",
+      "empty": "AI couldn’t find matching jobs. Try refining the description."
+    }
+  },
+  "job": {
+    "back": "← Back to jobs",
+    "apply": "Open original",
+    "notFound": "Job not found."
+  },
+  "events": {
+    "title": "Events",
+    "filters": {
+      "keyword": "Search",
+      "city": "City",
+      "region": "Region",
+      "remote": "Online",
+      "skills": "Skills",
+      "tags": "Tags",
+      "from": "From",
+      "to": "To",
+      "sort": "Sort",
+      "apply": "Apply",
+      "reset": "Reset"
+    },
+    "sortOptions": {
+      "soon": "Upcoming",
+      "recent": "Recent"
+    },
+    "empty": "No events found.",
+    "openOriginal": "Details",
+    "openDetails": "View",
+    "summary": "{count} events",
+    "error": {
+      "title": "We couldn’t load events right now",
+      "description": "Something went wrong while loading the events list. Please try again in a moment.",
+      "retry": "Try again"
+    }
+  },
+  "event": {
+    "back": "← Back to events",
+    "register": "Open original",
+    "notFound": "Event not found."
+  },
+  "about": {
+    "title": "About Junior UA",
+    "intro": "Junior UA connects juniors in Ukraine with curated jobs, events, and a community that wants them to grow.",
+    "sectionMissionTitle": "Our mission",
+    "sectionMissionBody": "We collect transparent opportunities, highlight supportive teams, and give early-career talent confidence that every listing was reviewed by humans.",
+    "sectionAudienceTitle": "Who we build for",
+    "sectionAudienceBody": "Students, career switchers, and first-job hunters who need a single trustworthy feed of openings, meetups, and learning moments across Ukraine."
+  },
+  "privacy": {
+    "title": "Privacy",
+    "intro": "We keep the product simple and only store data that helps us operate the site and measure interest.",
+    "dataSectionTitle": "Data we process",
+    "dataSectionBody": "When you browse the site we log basic analytics, crash reports, and any content you send us such as job tips or event forms.",
+    "cookiesSectionTitle": "Cookies and storage",
+    "cookiesSectionBody": "We use minimal cookies/local storage to remember your language and detect abuse. Third-party tracking scripts are opt-in and disabled by default."
+  },
+  "terms": {
+    "title": "Terms of use",
+    "intro": "By using Junior UA you agree to be respectful, share accurate information, and not misuse the platform.",
+    "usageSectionTitle": "Fair use",
+    "usageSectionBody": "Listings are provided for personal career exploration. Do not scrape, spam, or resell the data without permission.",
+    "liabilitySectionTitle": "Disclaimer",
+    "liabilitySectionBody": "Junior UA curates content but cannot guarantee completeness. Always double-check details with the original organizer or employer."
+  }
+}

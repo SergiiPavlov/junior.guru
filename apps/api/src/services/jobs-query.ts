@@ -11,6 +11,11 @@ type JobRecord = Prisma.JobGetPayload<{ include: { company: true; region: true }
 type JobListResponse = {
   items: JobRecord[];
   total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
 };
 
 function buildJobOrder(sort: JobQueryInput['sort']): Prisma.JobOrderByWithRelationInput[] {
@@ -96,21 +101,31 @@ function buildJobWhere(input: JobQueryInput): Prisma.JobWhereInput {
 export async function findJobsByQuery(input: JobQueryInput): Promise<JobListResponse> {
   const where = buildJobWhere(input);
   const orderBy = buildJobOrder(input.sort);
-  const skip = (input.page - 1) * input.perPage;
-  const take = input.perPage;
+  const perPage = input.perPage;
 
-  const [items, total] = await prisma.$transaction([
-    prisma.job.findMany({
-      where,
-      include: { company: true, region: true },
-      orderBy,
-      skip,
-      take
-    }),
-    prisma.job.count({ where })
-  ]);
+  const total = await prisma.job.count({ where });
+  const totalPages = Math.max(1, Math.ceil(total / perPage));
+  const page = Math.min(Math.max(1, input.page), totalPages);
+  const skip = (page - 1) * perPage;
+  const take = perPage;
 
-  return { items, total };
+  const items = await prisma.job.findMany({
+    where,
+    include: { company: true, region: true },
+    orderBy,
+    skip,
+    take
+  });
+
+  return {
+    items,
+    total,
+    page,
+    perPage,
+    totalPages,
+    hasPrev: page > 1,
+    hasNext: page < totalPages
+  };
 }
 
 export function mapJobRecordToItem(job: JobRecord) {

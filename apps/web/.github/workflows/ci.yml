@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/junior_ua?schema=public
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run -w @junior-ua/web lint || true
+      - run: npm run -w @junior-ua/api test || true
+      - run: npm run -w @junior-ua/workers test || true
+
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/junior_ua?schema=public
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run -w @junior-ua/api prisma:generate
+      - name: Build API
+        run: npm run -w @junior-ua/api build
+      - name: Build Web
+        run: CI=1 npm run -w @junior-ua/web build
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            apps/web/.next
+            apps/api/dist
+          if-no-files-found: ignore
+
+  e2e:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/junior_ua?schema=public
+      NEXT_PUBLIC_API_BASE: http://localhost:8787/api/v1
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - name: Start infra (postgres, meili, redis)
+        run: docker compose -f ops/docker-compose.yml up -d
+      - name: Configure Prisma env
+        run: |
+          mkdir -p packages/db/prisma
+          cat <<EOF > packages/db/prisma/.env
+          DATABASE_URL=${DATABASE_URL}
+          EOF
+      - name: Wait for services
+        run: npx wait-on -t 120000 tcp:localhost:5432 tcp:localhost:7700
+      - name: Prepare database
+        run: |
+          npm run db:migrate
+          npm run db:seed
+      - name: Build API
+        run: npm run -w @junior-ua/api build
+      - name: Build Web
+        run: CI=1 npm run -w @junior-ua/web build
+      - name: Start API
+        run: |
+          nohup npm run -w @junior-ua/api start > api.log 2>&1 &
+          npx wait-on -t 120000 http://localhost:8787/api/v1/health
+      - name: Start Web
+        run: |
+          nohup npm run -w @junior-ua/web start > web.log 2>&1 &
+          npx wait-on -t 120000 http://localhost:3000
+      - name: Print app logs on failure
+        if: failure()
+        run: |
+          echo "===== api.log ====="
+          cat api.log || echo "no api.log"
+          echo "===== web.log ====="
+          cat web.log || echo "no web.log"
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+      - name: Run E2E
+        run: npm run test:e2e
+      - name: Upload playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          if-no-files-found: ignore

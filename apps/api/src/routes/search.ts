@@ -19,9 +19,12 @@ export function registerSearchRoutes(app: Hono, deps: SearchDependencies = defau
       const result = await deps.searchJobs(input);
       const response = jobListResponseSchema.parse({
         items: result.items,
-        page: input.page,
-        perPage: input.perPage,
-        total: result.total
+        page: result.page,
+        perPage: result.perPage,
+        total: result.total,
+        totalPages: result.totalPages,
+        hasPrev: result.hasPrev,
+        hasNext: result.hasNext
       });
       return context.json(response);
     } catch (error: unknown) {

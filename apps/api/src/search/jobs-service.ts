@@ -12,6 +12,11 @@ type JobItem = ReturnType<typeof jobItemSchema['parse']>;
 type JobSearchResponse = {
   items: JobItem[];
   total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
 };
 
 function escapeFilterValue(value: string): string {
@@ -110,7 +115,12 @@ export async function searchJobsInIndex(
     const result = await fallback(input);
     return {
       items: result.items.map(mapJobRecordToItem),
-      total: result.total
+      total: result.total,
+      page: result.page,
+      perPage: result.perPage,
+      totalPages: result.totalPages,
+      hasNext: result.hasNext,
+      hasPrev: result.hasPrev
     };
   }
   const index = client.index<JobSearchDocument>(JOBS_INDEX);
@@ -124,8 +134,30 @@ export async function searchJobsInIndex(
     filter
   });
 
-  const items = response.hits.map(mapHitToJobItem);
   const total = response.estimatedTotalHits ?? response.hits.length;
+  const totalPages = Math.max(1, Math.ceil(total / input.perPage));
+  const page = Math.min(Math.max(1, input.page), totalPages);
 
-  return { items, total };
+  let hits = response.hits;
+  if (page !== input.page) {
+    const adjusted = await index.search<JobSearchDocument>(input.q ?? '', {
+      offset: (page - 1) * input.perPage,
+      limit: input.perPage,
+      sort: sort && sort.length > 0 ? sort : undefined,
+      filter
+    });
+    hits = adjusted.hits;
+  }
+
+  const items = hits.map(mapHitToJobItem);
+
+  return {
+    items,
+    total,
+    page,
+    perPage: input.perPage,
+    totalPages,
+    hasNext: page < totalPages,
+    hasPrev: page > 1
+  };
 }
