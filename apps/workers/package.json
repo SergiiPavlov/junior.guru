@@ -13,7 +13,8 @@
     "test": "tsx --env-file=../../.env --test"
   },
   "dependencies": {
-    "@prisma/client": "^5.16.2"
+    "@prisma/client": "^5.16.2",
+    "@junior-ua/api": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",

@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
-    "build": "next build",
-    "start": "next start -p 3000",
+    "build": "next build && npm run ensure:routes",
+    "start": "npm run ensure:routes && next start -p 3000",
     "lint": "node scripts/lint.js",
     "format": "prettier --check .",
-    "format:write": "prettier --write ."
+    "format:write": "prettier --write .",
+    "ensure:routes": "node scripts/ensure-routes-manifest.js"
   },
   "dependencies": {
     "next": "^15.0.0",
