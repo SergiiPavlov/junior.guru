@@ -1,35 +1,38 @@
 {
-  "name": "@junior-ua/web",
-  "version": "0.1.0",
+  "name": "junior-ua-monorepo",
   "private": true,
+  "packageManager": "npm@10.8.1",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev -p 3000",
-    "build": "next build && npm run ensure:routes",
-    "start": "npm run ensure:routes && next start -p 3000",
-    "lint": "node scripts/lint.js",
-    "format": "prettier --check .",
-    "format:write": "prettier --write .",
-    "ensure:routes": "node scripts/ensure-routes-manifest.js"
-  },
-  "dependencies": {
-    "next": "^15.0.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "dev:web": "npm run -w @junior-ua/web dev",
+    "dev:api": "npm run -w @junior-ua/api dev",
+    "dev": "npx -y npm-run-all -p dev:api dev:web",
+    "build:web": "npm run -w @junior-ua/web build",
+    "build:api": "npm run -w @junior-ua/api build",
+    "build": "npx -y npm-run-all -s build:api build:web",
+    "start:web": "npm run -w @junior-ua/web start",
+    "start:api": "npm run -w @junior-ua/api start",
+    "start": "npx -y npm-run-all -p start:api start:web",
+    "db:migrate": "npm run -w @junior-ua/api db:migrate",
+    "db:seed": "npm run -w @junior-ua/api db:seed",
+    "search:reindex": "npm run -w @junior-ua/api search:reindex",
+    "demo:seed": "npm run db:migrate && npm run db:seed && npm run workers:jobs && npm run workers:events && npm run search:reindex",
+    "workers:jobs": "npm run -w @junior-ua/workers jobs:run",
+    "workers:events": "npm run -w @junior-ua/workers events:run",
+    "workers:jobs:http": "npm run -w @junior-ua/workers jobs:run:http",
+    "workers:jobs:jooble": "npm run -w @junior-ua/workers jobs:run:jooble",
+    "lint:web": "npm run -w @junior-ua/web lint",
+    "format:web": "npm run -w @junior-ua/web format",
+    "format:web:write": "npm run -w @junior-ua/web format:write",
+    "lint": "npx -y npm-run-all -p lint:web",
+    "format": "npx -y npm-run-all -p format:web",
+    "all": "npm run dev",
+    "test:e2e": "npx -y playwright test --config=playwright.config.ts"
   },
   "devDependencies": {
-    "@types/node": "^20.12.7",
-    "@types/react": "^18.2.42",
-    "@types/react-dom": "^18.2.18",
-    "autoprefixer": "^10.4.19",
-    "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.14",
-    "typescript": "^5.5.4",
-    "@next/eslint-plugin-next": "^15.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.10.0",
-    "@typescript-eslint/parser": "^8.10.0",
-    "eslint": "^9.12.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.30.0",
-    "prettier": "^3.3.3"
+    "npm-run-all": "^4.1.5"
   }
 }
