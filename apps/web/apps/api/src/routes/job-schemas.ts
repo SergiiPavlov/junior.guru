@@ -65,7 +65,10 @@ const jobListResponseSchema = z.object({
   items: z.array(jobItemSchema),
   page: z.number().int().min(1),
   perPage: z.number().int().min(1),
-  total: z.number().int().min(0)
+  total: z.number().int().min(0),
+  totalPages: z.number().int().min(1),
+  hasNext: z.boolean(),
+  hasPrev: z.boolean()
 });
 
 export { csvArraySchema, jobItemSchema, jobListResponseSchema, jobQuerySchema };

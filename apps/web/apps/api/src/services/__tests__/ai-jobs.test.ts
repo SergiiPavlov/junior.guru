@@ -59,7 +59,7 @@ test('suggestJobs maps AI filters to search query and returns jobs', async () =>
       createChatCompletion: () => fakeCompletion,
       searchJobsInIndex: async (input) => {
         capturedQuery = input;
-        return { items: [sampleJob], total: 1 };
+        return { items: [sampleJob], total: 1, page: 1, perPage: 20, totalPages: 1, hasNext: false, hasPrev: false };
       }
     }
   );
@@ -80,7 +80,7 @@ test('suggestJobs validates payload', async () => {
     () =>
       suggestJobs(
         {},
-        { createChatCompletion: () => async () => ({ choices: [] }), searchJobsInIndex: async () => ({ items: [], total: 0 }) }
+        { createChatCompletion: () => async () => ({ choices: [] }), searchJobsInIndex: async () => ({ items: [], total: 0, page: 1, perPage: 20, totalPages: 1, hasNext: false, hasPrev: false }) }
       ),
     ZodError
   );

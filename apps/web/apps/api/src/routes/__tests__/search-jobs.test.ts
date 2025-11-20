@@ -35,7 +35,7 @@ test('GET /search/jobs forwards query params and returns search results', async 
   registerSearchRoutes(app, {
     searchJobs: async (input) => {
       capturedInput = input;
-      return { items: [sampleJob], total: 1 };
+      return { items: [sampleJob], total: 3, page: input.page, perPage: input.perPage, totalPages: 2, hasNext: input.page < 2, hasPrev: input.page > 1 };
     }
   });
 
@@ -45,7 +45,10 @@ test('GET /search/jobs forwards query params and returns search results', async 
   const body = await response.json();
   assert.equal(body.page, 2);
   assert.equal(body.perPage, 5);
-  assert.equal(body.total, 1);
+  assert.equal(body.total, 3);
+  assert.equal(body.totalPages, 2);
+  assert.equal(body.hasPrev, true);
+  assert.equal(body.hasNext, false);
   assert.equal(body.items.length, 1);
   assert.equal(body.items[0].id, 'job-1');
 
@@ -53,5 +56,25 @@ test('GET /search/jobs forwards query params and returns search results', async 
   assert.equal(input.q, 'react');
   assert.equal(input.page, 2);
   assert.equal(input.perPage, 5);
+});
+
+test('GET /search/jobs clamps page when out of range', async () => {
+  const app = new Hono();
+  registerSearchRoutes(app, {
+    searchJobs: async (input) => {
+      return { items: [sampleJob], total: 1, page: 1, perPage: input.perPage, totalPages: 1, hasNext: false, hasPrev: false };
+    }
+  });
+
+  const response = await app.request('/search/jobs?page=999&perPage=2');
+  assert.equal(response.status, 200);
+
+  const body = await response.json();
+  assert.equal(body.page, 1);
+  assert.equal(body.perPage, 2);
+  assert.equal(body.total, 1);
+  assert.equal(body.totalPages, 1);
+  assert.equal(body.hasNext, false);
+  assert.equal(body.hasPrev, false);
 });
 

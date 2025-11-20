@@ -10,3 +10,4 @@ dist
 .pnpm-store
 coverage
 playwright-report
+apps/web/package-lock.json

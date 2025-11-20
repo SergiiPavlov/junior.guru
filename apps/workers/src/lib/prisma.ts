@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-import { registerSearchHooks } from '@junior-ua/api/search/hooks';
+import { registerSearchHooks } from '../../../api/src/search/hooks';
 
 const globalScope = globalThis as unknown as {
   workersPrisma?: PrismaClient;

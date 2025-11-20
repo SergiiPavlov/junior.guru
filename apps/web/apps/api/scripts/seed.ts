@@ -1,3 +1,9 @@
+import path from "node:path";
+import dotenv from "dotenv";
+
+dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
+dotenv.config({ path: path.resolve(__dirname, "../../../packages/db/prisma/.env") });
+
 import { PrismaClient } from '@prisma/client';
 import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';

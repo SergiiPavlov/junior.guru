@@ -8,13 +8,13 @@ import type { JobQueryInput } from '../../services/jobs-query';
 
 test('searchJobsInIndex builds filters and sorting parameters', async () => {
   let capturedQuery = '';
-  let capturedParams: SearchParams | undefined;
+  const capturedParams: SearchParams[] = [];
 
   const fakeClient: MeiliHttpClient = {
     index: () => ({
       search: async (query: string, params: SearchParams) => {
         capturedQuery = query;
-        capturedParams = params;
+        capturedParams.push(params);
         const hit: JobSearchDocument = {
           id: 'job-1',
           slug: 'job-1',
@@ -62,12 +62,20 @@ test('searchJobsInIndex builds filters and sorting parameters', async () => {
   );
 
   assert.equal(capturedQuery, 'react');
-  assert.ok(capturedParams);
-  assert.deepEqual(capturedParams?.sort, ['salaryMin:desc']);
-  assert.equal(capturedParams?.limit, 5);
-  assert.equal(capturedParams?.offset, 5);
-  assert.deepEqual(capturedParams?.filter, ['isRemote = true', ['skills = "React"'], ['tags = "frontend"']]);
+  assert.ok(capturedParams.length >= 1);
+  const firstParams = capturedParams[0];
+  assert.deepEqual(firstParams?.sort, ['salaryMin:desc']);
+  assert.equal(firstParams?.limit, 5);
+  assert.equal(firstParams?.offset, 5);
+  assert.deepEqual(firstParams?.filter, ['isRemote = true', ['skills = "React"'], ['tags = "frontend"']]);
+  const lastParams = capturedParams[capturedParams.length - 1];
+  assert.equal(lastParams?.offset, 0);
   assert.equal(result.total, 1);
+  assert.equal(result.page, 1);
+  assert.equal(result.perPage, 5);
+  assert.equal(result.totalPages, 1);
+  assert.equal(result.hasNext, false);
+  assert.equal(result.hasPrev, false);
   assert.equal(result.items[0].id, 'job-1');
 });
 
@@ -100,7 +108,12 @@ test('searchJobsInIndex falls back to Prisma query when client is missing', asyn
           validUntil: null
         }
       ] as any,
-      total: 1
+      total: 1,
+      page: 1,
+      perPage: 10,
+      totalPages: 1,
+      hasNext: false,
+      hasPrev: false
     };
   };
 
@@ -125,5 +138,9 @@ test('searchJobsInIndex falls back to Prisma query when client is missing', asyn
 
   assert.equal(fallbackCalled, true);
   assert.equal(result.total, 1);
+  assert.equal(result.page, 1);
+  assert.equal(result.totalPages, 1);
+  assert.equal(result.hasNext, false);
+  assert.equal(result.hasPrev, false);
   assert.equal(result.items[0].slug, 'job-1');
 });
