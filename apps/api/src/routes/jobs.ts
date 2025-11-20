@@ -7,16 +7,27 @@ import { jobItemSchema, jobListResponseSchema, jobQuerySchema } from './job-sche
 
 export { jobItemSchema, jobListResponseSchema, jobQuerySchema } from './job-schemas.js';
 
-export function registerJobRoutes(app: Hono) {
+type JobDependencies = {
+  findJobsByQuery: typeof findJobsByQuery;
+};
+
+const defaultJobDeps: JobDependencies = {
+  findJobsByQuery
+};
+
+export function registerJobRoutes(app: Hono, deps: JobDependencies = defaultJobDeps) {
   app.get('/jobs', async (context) => {
     try {
       const input = jobQuerySchema.parse(Object.fromEntries(new URL(context.req.url).searchParams.entries()));
-      const result = await findJobsByQuery(input);
+      const result = await deps.findJobsByQuery(input);
       const response = jobListResponseSchema.parse({
         items: result.items.map(mapJobRecordToItem),
-        page: input.page,
-        perPage: input.perPage,
-        total: result.total
+        page: result.page,
+        perPage: result.perPage,
+        total: result.total,
+        totalPages: result.totalPages,
+        hasPrev: result.hasPrev,
+        hasNext: result.hasNext
       });
       return context.json(response);
     } catch (error: unknown) {
