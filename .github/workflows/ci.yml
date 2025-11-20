@@ -11,6 +11,8 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/junior_ua?schema=public
     steps:
       - uses: actions/checkout@v4
+      - name: Prepare env file
+        run: cp .env.example .env
       - uses: actions/setup-node@v4
         with:
           node-version: 20
