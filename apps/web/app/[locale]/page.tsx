@@ -40,7 +40,7 @@ export default async function Home({ params }: HomePageProps) {
   const tHome = await getTranslator(locale, "home");
 
   return (
-    <main className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center px-4">
+    <main className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-start px-4 pt-16 sm:pt-20 lg:pt-24">
       <div className="flex w-full max-w-3xl flex-col items-center text-center space-y-6">
         <Image
           src="/logo-juy.svg"

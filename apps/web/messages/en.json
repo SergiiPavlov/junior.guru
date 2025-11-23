@@ -100,7 +100,9 @@
       "error": "We couldn’t get a response from the AI. Please try again.",
       "missingQuery": "Tell us what you’re looking for.",
       "empty": "AI couldn’t find matching jobs. Try refining the description."
-    }
+    },
+    "prev": "Previous",
+    "next": "Next"
   },
   "job": {
     "back": "← Back to jobs",
