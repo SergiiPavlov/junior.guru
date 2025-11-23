@@ -10,7 +10,9 @@
     "jobs:run:jooble": "tsx --env-file=../../.env src/cli/jobs.ts --mode=jooble",
     "jobs:run:remotive": "tsx --env-file=../../.env src/cli/jobs.ts --mode=remotive",
     "events:run": "tsx --env-file=../../.env src/cli/events.ts",
-    "test": "tsx --env-file=../../.env --test"
+    "test": "tsx --env-file=../../.env --test",
+    "events:run:eventbrite": "tsx --env-file=../../.env src/cli/events.ts --mode=eventbrite",
+    "jobs:run:adzuna": "tsx --env-file=../../.env src/cli/jobs.ts --mode=adzuna"
   },
   "dependencies": {
     "@prisma/client": "^5.16.2"
