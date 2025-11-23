@@ -73,7 +73,9 @@
     "salary": "{min}–{max} {currency}",
     "salaryFrom": "from {min} {currency}",
     "pagination": {
-      "page": "Page {page} of {pages}"
+      "page": "Page {page} of {pages}",
+      "prev": "Previous",
+      "next": "Next"
     },
     "error": {
       "title": "We couldn’t load jobs right now",
@@ -100,9 +102,7 @@
       "error": "We couldn’t get a response from the AI. Please try again.",
       "missingQuery": "Tell us what you’re looking for.",
       "empty": "AI couldn’t find matching jobs. Try refining the description."
-    },
-    "prev": "Previous",
-    "next": "Next"
+    }
   },
   "job": {
     "back": "← Back to jobs",

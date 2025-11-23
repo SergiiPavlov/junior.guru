@@ -1,12 +1,24 @@
 import { prisma } from '../lib/prisma';
 import { runWorker } from '../workers/base';
 import { createEventsCsvWorker } from '../workers/events-csv-worker';
+import { createEventsEventbriteWorker } from '../workers/events-eventbrite-worker';
+
+const mode = process.argv.find((arg) => arg.startsWith('--mode='))?.split('=')[1] ?? 'csv';
 
 async function main() {
-  const worker = createEventsCsvWorker(prisma);
+  let worker;
+
+  if (mode === 'eventbrite') {
+    console.log('[workers] Running Eventbrite events worker...');
+    worker = createEventsEventbriteWorker(prisma);
+  } else {
+    console.log('[workers] Running CSV events worker...');
+    worker = createEventsCsvWorker(prisma);
+  }
+
   const result = await runWorker(worker);
   console.log(
-    `✔ Events import finished (processed: ${result.processed}, skipped: ${result.skipped}, failed: ${result.failed})`
+    `✔ Events import finished (mode=${mode}, processed: ${result.processed}, skipped: ${result.skipped}, failed: ${result.failed})`
   );
 }
 

@@ -4,6 +4,7 @@ import { createJobsCsvWorker } from '../workers/jobs-csv-worker';
 import { createJobsHttpWorker } from '../workers/jobs-http-worker';
 import { createJobsJoobleWorker } from '../workers/jobs-jooble-worker';
 import { createJobsRemotiveWorker } from '../workers/jobs-remotive-worker';
+import { createJobsAdzunaWorker } from '../workers/jobs-adzuna-worker';
 
 const mode = process.argv.find((arg) => arg.startsWith('--mode='))?.split('=')[1] ?? 'csv';
 const locationOverride = process.argv.find((arg) => arg.startsWith('--location='))?.split('=')[1];
@@ -14,6 +15,16 @@ async function main() {
     console.log('[workers] Running HTTP jobs worker...');
     result = await runWorker(createJobsHttpWorker(prisma));
   } else if (mode === 'jooble') {
+    console.log('[workers] Running Jooble jobs worker...');
+    result = await runWorker(
+      createJobsJoobleWorker(prisma, {
+        location: locationOverride
+      })
+    );
+  } else if (mode === 'adzuna') {
+    console.log('[workers] Running Adzuna jobs worker...');
+    result = await runWorker(createJobsAdzunaWorker(prisma));
+  } else if (mode === 'remotive') {
     console.log(`[workers] Running Jooble jobs worker (location=${locationOverride ?? 'env/default'})...`);
     result = await runWorker(createJobsJoobleWorker(prisma, { location: locationOverride }));
   } else if (mode === 'remotive') {

@@ -18,6 +18,8 @@ import { JobsAiDialog } from "./JobsAiDialog";
 
 const SORT_OPTIONS = ["recent", "relevant", "salary_desc", "salary_asc"] as const;
 const PER_PAGE_OPTIONS = [10, 20, 30, 40, 50];
+const DEFAULT_SORT = "recent";
+const DEFAULT_PER_PAGE = "20";
 const baseInputClasses =
   "w-full min-h-[44px] rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]";
 const dropdownPanelClasses =
@@ -44,14 +46,23 @@ export function JobsFilters() {
       salaryMin: params.get("salaryMin") ?? "",
       currency: params.get("currency") ?? "",
       experience: params.get("experience") ?? "",
-      sort: params.get("sort") ?? "recent",
-      perPage: params.get("perPage") ?? "20"
+      sort: params.get("sort") ?? DEFAULT_SORT,
+      perPage: params.get("perPage") ?? DEFAULT_PER_PAGE
     };
   }, [searchParams]);
 
+  const [qValue, setQValue] = useState(currentValues.q);
+  const [cityValue, setCityValue] = useState(currentValues.city);
+  const [regionValue, setRegionValue] = useState(currentValues.region);
+  const [countryValue, setCountryValue] = useState(currentValues.country);
+  const [remoteValue, setRemoteValue] = useState(currentValues.remote);
   const [skillsValue, setSkillsValue] = useState(currentValues.skills);
   const [tagsValue, setTagsValue] = useState(currentValues.tags);
   const [salaryMinValue, setSalaryMinValue] = useState(currentValues.salaryMin);
+  const [currencyValue, setCurrencyValue] = useState(currentValues.currency);
+  const [experienceValue, setExperienceValue] = useState(currentValues.experience);
+  const [sortValue, setSortValue] = useState(currentValues.sort);
+  const [perPageValue, setPerPageValue] = useState(currentValues.perPage);
   const [isSkillsDropdownOpen, setIsSkillsDropdownOpen] = useState(false);
   const [isTagsDropdownOpen, setIsTagsDropdownOpen] = useState(false);
   const [isSalaryDropdownOpen, setIsSalaryDropdownOpen] = useState(false);
@@ -60,16 +71,19 @@ export function JobsFilters() {
   const salaryDropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    setQValue(currentValues.q);
+    setCityValue(currentValues.city);
+    setRegionValue(currentValues.region);
+    setCountryValue(currentValues.country);
+    setRemoteValue(currentValues.remote);
     setSkillsValue(currentValues.skills);
-  }, [currentValues.skills]);
-
-  useEffect(() => {
     setTagsValue(currentValues.tags);
-  }, [currentValues.tags]);
-
-  useEffect(() => {
     setSalaryMinValue(currentValues.salaryMin);
-  }, [currentValues.salaryMin]);
+    setCurrencyValue(currentValues.currency);
+    setExperienceValue(currentValues.experience);
+    setSortValue(currentValues.sort);
+    setPerPageValue(currentValues.perPage);
+  }, [currentValues]);
 
   const splitCommaSeparated = useCallback((value: string) => {
     return value
@@ -95,35 +109,70 @@ export function JobsFilters() {
     return [...items, normalized].join(", ");
   }, [splitCommaSeparated]);
 
-  const applyFilters = useCallback(
-    (form: HTMLFormElement) => {
-      const formData = new FormData(form);
-      const params = new URLSearchParams();
-      formData.forEach((value, key) => {
-        if (typeof value === "string" && value.trim().length > 0) {
-          params.set(key, value.trim());
-        }
-      });
-      if (formData.get("remote") === "on") {
-        params.set("remote", "true");
+  const applyFilters = useCallback(() => {
+    const params = new URLSearchParams();
+    const setParam = (key: string, value: string) => {
+      const trimmed = value.trim();
+      if (trimmed.length > 0) {
+        params.set(key, trimmed);
       }
-      router.push(`?${params.toString()}`);
-    },
-    [router]
-  );
+    };
+
+    setParam("q", qValue);
+    setParam("city", cityValue);
+    setParam("region", regionValue);
+    setParam("country", countryValue);
+    setParam("skills", skillsValue);
+    setParam("tags", tagsValue);
+    setParam("salaryMin", salaryMinValue);
+    setParam("currency", currencyValue);
+    setParam("experience", experienceValue);
+    setParam("sort", sortValue);
+    setParam("perPage", perPageValue);
+
+    if (remoteValue) {
+      params.set("remote", "true");
+    }
+
+    const query = params.toString();
+    router.push(query ? `?${query}` : "?");
+  }, [
+    cityValue,
+    countryValue,
+    currencyValue,
+    experienceValue,
+    perPageValue,
+    qValue,
+    regionValue,
+    remoteValue,
+    router,
+    salaryMinValue,
+    skillsValue,
+    sortValue,
+    tagsValue
+  ]);
 
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      applyFilters(event.currentTarget);
+      applyFilters();
     },
     [applyFilters]
   );
 
   const handleReset = useCallback(() => {
+    setQValue("");
+    setCityValue("");
+    setRegionValue("");
+    setCountryValue("");
+    setRemoteValue(false);
     setSkillsValue("");
     setTagsValue("");
     setSalaryMinValue("");
+    setCurrencyValue("");
+    setExperienceValue("");
+    setSortValue(DEFAULT_SORT);
+    setPerPageValue(DEFAULT_PER_PAGE);
     setIsSkillsDropdownOpen(false);
     setIsTagsDropdownOpen(false);
     setIsSalaryDropdownOpen(false);
@@ -193,7 +242,8 @@ export function JobsFilters() {
           <span>{t("keyword")}</span>
           <input
             name="q"
-            defaultValue={currentValues.q}
+            value={qValue}
+            onChange={(event) => setQValue(event.target.value)}
             className={baseInputClasses}
             placeholder={t("keyword")}
             list="jobs-keyword-suggestions"
@@ -209,7 +259,8 @@ export function JobsFilters() {
           <span>{t("city")}</span>
           <input
             name="city"
-            defaultValue={currentValues.city}
+            value={cityValue}
+            onChange={(event) => setCityValue(event.target.value)}
             className={baseInputClasses}
             placeholder="Kyiv"
             list="jobs-city-suggestions"
@@ -224,14 +275,20 @@ export function JobsFilters() {
           <span>{t("region")}</span>
           <input
             name="region"
-            defaultValue={currentValues.region}
+            value={regionValue}
+            onChange={(event) => setRegionValue(event.target.value)}
             className={baseInputClasses}
             placeholder="UA-30"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("country")}</span>
-          <select name="country" defaultValue={currentValues.country} className={baseInputClasses}>
+          <select
+            name="country"
+            value={countryValue}
+            onChange={(event) => setCountryValue(event.target.value)}
+            className={baseInputClasses}
+          >
             <option value="">{t("countryAny")}</option>
             <option value="UA">Ukraine</option>
             <option value="PL">Poland</option>
@@ -244,7 +301,8 @@ export function JobsFilters() {
             <input
               type="checkbox"
               name="remote"
-              defaultChecked={currentValues.remote}
+              checked={remoteValue}
+              onChange={(event) => setRemoteValue(event.target.checked)}
               className="h-4 w-4 rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"
               aria-label={t("remote")}
             />
@@ -417,7 +475,8 @@ export function JobsFilters() {
           <span>{t("currency")}</span>
           <input
             name="currency"
-            defaultValue={currentValues.currency}
+            value={currencyValue}
+            onChange={(event) => setCurrencyValue(event.target.value)}
             className={baseInputClasses}
             placeholder="UAH"
           />
@@ -428,7 +487,8 @@ export function JobsFilters() {
           <span>{t("experience")}</span>
           <input
             name="experience"
-            defaultValue={currentValues.experience}
+            value={experienceValue}
+            onChange={(event) => setExperienceValue(event.target.value)}
             className={baseInputClasses}
             placeholder="junior"
             list="jobs-level-options"
@@ -441,7 +501,12 @@ export function JobsFilters() {
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("sort")}</span>
-          <select name="sort" defaultValue={currentValues.sort} className={baseInputClasses}>
+          <select
+            name="sort"
+            value={sortValue}
+            onChange={(event) => setSortValue(event.target.value)}
+            className={baseInputClasses}
+          >
             {SORT_OPTIONS.map((option) => (
               <option key={option} value={option}>
                 {tSort(option)}
@@ -451,7 +516,12 @@ export function JobsFilters() {
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>{t("perPage")}</span>
-          <select name="perPage" defaultValue={currentValues.perPage} className={baseInputClasses}>
+          <select
+            name="perPage"
+            value={perPageValue}
+            onChange={(event) => setPerPageValue(event.target.value)}
+            className={baseInputClasses}
+          >
             {PER_PAGE_OPTIONS.map((option) => (
               <option key={option} value={option}>
                 {option}
@@ -461,7 +531,7 @@ export function JobsFilters() {
         </label>
       </div>
       <div className="flex flex-col gap-4 border-t border-dashed border-black/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
-        <JobsAiDialog country={currentValues.country || undefined} remoteOnly={currentValues.remote} />
+        <JobsAiDialog country={countryValue || undefined} remoteOnly={remoteValue} />
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
           <button
             type="submit"
