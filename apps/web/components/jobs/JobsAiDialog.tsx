@@ -99,8 +99,11 @@ export function JobsAiDialog({ country, remoteOnly }: JobsAiDialogProps) {
         onClick={openDialog}
         className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--accent-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
       >
-        <span aria-hidden="true" className="text-lg">
-          ✨
+        <span
+          aria-hidden="true"
+          className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-[var(--accent)] text-[11px] font-semibold leading-none"
+        >
+          AI
         </span>
         <span>{tAi("button")}</span>
       </button>
@@ -116,7 +119,12 @@ export function JobsAiDialog({ country, remoteOnly }: JobsAiDialogProps) {
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">
-                  <span aria-hidden="true">✨</span>
+                  <span
+                    aria-hidden="true"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[var(--accent)] bg-white text-[12px] font-semibold leading-none"
+                  >
+                    AI
+                  </span>
                 </div>
                 <div>
                   <p className="text-base md:text-lg font-semibold text-gray-900">{tAi("title")}</p>

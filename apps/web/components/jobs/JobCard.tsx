@@ -32,7 +32,7 @@ export function JobCard({ job }: { job: JobListItem }) {
   const originalUrl = job.sourceUrl ?? job.urlOriginal ?? job.urlApply;
 
   return (
-    <article className="card flex flex-col gap-3">
+    <article className="card flex flex-col gap-3 border border-gray-200 shadow-md">
       <div className="text-sm text-gray-500">{job.companyName ?? "—"}</div>
       <h2 className="text-lg font-semibold leading-tight">{job.title}</h2>
       <div className="mt-2 flex flex-wrap gap-2 text-xs">
