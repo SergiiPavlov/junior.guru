@@ -32,7 +32,7 @@ export function JobCard({ job }: { job: JobListItem }) {
   const originalUrl = job.sourceUrl ?? job.urlOriginal ?? job.urlApply;
 
   return (
-    <article className="card flex flex-col gap-3 border border-gray-200 shadow-md">
+    <article className="card flex flex-col gap-3 border border-gray-200 shadow-md" data-testid="job-card">
       <div className="text-sm text-gray-500">{job.companyName ?? "—"}</div>
       <h2 className="text-lg font-semibold leading-tight">{job.title}</h2>
       <div className="mt-2 flex flex-wrap gap-2 text-xs">
@@ -57,6 +57,7 @@ export function JobCard({ job }: { job: JobListItem }) {
         <Link
           href={`/${locale}/jobs/${job.id}`}
           className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-[var(--accent)] px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--accent-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] disabled:opacity-60 disabled:cursor-not-allowed"
+          data-testid="job-card-link"
         >
           {t("openDetails")}
         </Link>
