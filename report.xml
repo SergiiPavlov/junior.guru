@@ -1,0 +1,6 @@
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="7.4068320000000005">
+<testsuite name="basic.spec.ts" timestamp="2025-11-25T10:32:03.029Z" hostname="" tests="1" failures="0" skipped="0" time="5.927" errors="0">
+<testcase name="Home smoke (uk locale) › home → has hero heading" classname="basic.spec.ts" time="5.927">
+</testcase>
+</testsuite>
+</testsuites>
