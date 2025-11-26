@@ -21,15 +21,12 @@ async function main() {
         location: locationOverride
       })
     );
-  } else if (mode === 'adzuna') {
-    console.log('[workers] Running Adzuna jobs worker...');
-    result = await runWorker(createJobsAdzunaWorker(prisma));
-  } else if (mode === 'remotive') {
-    console.log(`[workers] Running Jooble jobs worker (location=${locationOverride ?? 'env/default'})...`);
-    result = await runWorker(createJobsJoobleWorker(prisma, { location: locationOverride }));
   } else if (mode === 'remotive') {
     console.log('[workers] Running Remotive jobs worker...');
     result = await runWorker(createJobsRemotiveWorker(prisma));
+  } else if (mode === 'adzuna') {
+    console.log('[workers] Running Adzuna jobs worker...');
+    result = await runWorker(createJobsAdzunaWorker(prisma));
   } else {
     console.log('[workers] Running CSV jobs worker...');
     result = await runWorker(createJobsCsvWorker(prisma));
