@@ -17,10 +17,11 @@
   "dependencies": {
     "@hono/node-server": "^1.11.0",
     "@prisma/client": "^5.16.2",
+    "@types/node": "^20.19.25",
     "hono": "^4.6.8"
   },
   "devDependencies": {
-    "@types/node": "^20.19.25",
+   
     "prisma": "^5.16.2",
     "tsx": "^4.7.0",
     "typescript": "^5.5.4"
