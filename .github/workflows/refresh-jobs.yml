@@ -1,0 +1,64 @@
+name: Refresh Jobs (Every 12h)
+
+on:
+  schedule:
+    - cron: "0 */12 * * *" # каждые 12 часов
+  workflow_dispatch: # запуск вручную
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Turbo cache (optional, faster)
+        run: npm install turbo --global
+
+      - name: Run Jooble Worker
+        run: npm run -w @junior-ua/workers jobs:run:jooble
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JOOBLE_API_KEY: ${{ secrets.JOOBLE_API_KEY }}
+          JOOBLE_API_ENDPOINT: ${{ secrets.JOOBLE_API_ENDPOINT }}
+          JOOBLE_LOCATION_DEFAULT: ${{ secrets.JOOBLE_LOCATION_DEFAULT }}
+          JOOBLE_QUERY: ${{ secrets.JOOBLE_QUERY }}
+          JOOBLE_PAGE_SIZE: ${{ secrets.JOOBLE_PAGE_SIZE }}
+          JOOBLE_MAX_PAGES: ${{ secrets.JOOBLE_MAX_PAGES }}
+
+      - name: Run Remotive Worker
+        run: npm run -w @junior-ua/workers jobs:run:remotive
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          REMOTIVE_API_ENDPOINT: ${{ secrets.REMOTIVE_API_ENDPOINT }}
+          REMOTIVE_CATEGORY: ${{ secrets.REMOTIVE_CATEGORY }}
+          REMOTIVE_SEARCH: ${{ secrets.REMOTIVE_SEARCH }}
+          REMOTIVE_LIMIT: ${{ secrets.REMOTIVE_LIMIT }}
+
+      - name: Run Adzuna Worker
+        run: npm run -w @junior-ua/workers jobs:run:adzuna
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+          ADZUNA_COUNTRY: ${{ secrets.ADZUNA_COUNTRY }}
+          ADZUNA_CATEGORY: ${{ secrets.ADZUNA_CATEGORY }}
+          ADZUNA_WHAT: ${{ secrets.ADZUNA_WHAT }}
+          ADZUNA_PAGE_SIZE: ${{ secrets.ADZUNA_PAGE_SIZE }}
+          ADZUNA_MAX_PAGES: ${{ secrets.ADZUNA_MAX_PAGES }}
+
+      - name: Reindex Search (DB mode)
+        run: npm run -w @junior-ua/api search:reindex
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          API_SEARCH_ENABLED: false
+          API_ADMIN_TOKEN: ${{ secrets.API_ADMIN_TOKEN }}
