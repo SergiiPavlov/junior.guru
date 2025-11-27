@@ -1,15 +1,21 @@
 import type { MiddlewareHandler } from 'hono';
 
 export function createCors(allowedOrigin: string): MiddlewareHandler {
-  return async (context, next) => {
-    const requestOrigin = context.req.header('origin');
+  // убираем слэш в конце, если он есть
+  const normalizedAllowedOrigin = allowedOrigin.replace(/\/$/, '');
 
-    if (requestOrigin && requestOrigin !== allowedOrigin) {
+  return async (context, next) => {
+    const requestOriginHeader = context.req.header('origin');
+    const requestOrigin = requestOriginHeader
+      ? requestOriginHeader.replace(/\/$/, '')
+      : undefined;
+
+    if (requestOrigin && requestOrigin !== normalizedAllowedOrigin) {
       return context.json({ error: 'Origin not allowed' }, 403);
     }
 
     if (context.req.method === 'OPTIONS') {
-      context.header('Access-Control-Allow-Origin', allowedOrigin);
+      context.header('Access-Control-Allow-Origin', normalizedAllowedOrigin);
       context.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
       context.header('Access-Control-Allow-Headers', 'Content-Type');
       context.header('Vary', 'Origin');
@@ -18,7 +24,7 @@ export function createCors(allowedOrigin: string): MiddlewareHandler {
 
     await next();
 
-    context.header('Access-Control-Allow-Origin', allowedOrigin);
+    context.header('Access-Control-Allow-Origin', normalizedAllowedOrigin);
     context.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
     context.header('Access-Control-Allow-Headers', 'Content-Type');
     context.header('Vary', 'Origin');
