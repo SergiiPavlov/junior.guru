@@ -118,17 +118,27 @@ export function JobsFilters() {
       }
     };
 
-    setParam("q", qValue);
-    setParam("city", cityValue);
-    setParam("region", regionValue);
-    setParam("country", countryValue);
-    setParam("skills", skillsValue);
-    setParam("tags", tagsValue);
-    setParam("salaryMin", salaryMinValue);
-    setParam("currency", currencyValue);
-    setParam("experience", experienceValue);
-    setParam("sort", sortValue);
-    setParam("perPage", perPageValue);
+  // сначала склеиваем ключевое слово и уровень
+const qParts: string[] = [];
+if (qValue.trim().length > 0) {
+  qParts.push(qValue.trim());
+}
+if (experienceValue.trim().length > 0) {
+  qParts.push(experienceValue.trim());
+}
+const combinedQuery = qParts.join(" ");
+
+setParam("q", combinedQuery);
+setParam("city", cityValue);
+setParam("region", regionValue);
+setParam("country", countryValue);
+setParam("skills", skillsValue);
+setParam("tags", tagsValue);
+setParam("salaryMin", salaryMinValue);
+setParam("currency", currencyValue);
+setParam("sort", sortValue);
+setParam("perPage", perPageValue);
+
 
     if (remoteValue) {
       params.set("remote", "true");
