@@ -166,5 +166,8 @@
     "usageSectionBody": "Listings are provided for personal career exploration. Do not scrape, spam, or resell the data without permission.",
     "liabilitySectionTitle": "Disclaimer",
     "liabilitySectionBody": "Junior UA curates content but cannot guarantee completeness. Always double-check details with the original organizer or employer."
+  },
+  "devBanner": {
+    "message": "This site is currently in active development. Some parts may be incomplete. Please don’t judge it too strictly — we’re still working on it 🙂"
   }
 }

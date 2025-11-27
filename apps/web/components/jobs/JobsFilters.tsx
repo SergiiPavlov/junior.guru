@@ -272,6 +272,8 @@ export function JobsFilters() {
             className={baseInputClasses}
           >
             <option value="">{t("currencyAny")}</option>
+            <option value="UAH">UAH</option>
+            <option value="EUR">EUR</option>
             <option value="USD">USD</option>
           </select>
         </label>
