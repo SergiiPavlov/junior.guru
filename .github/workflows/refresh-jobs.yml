@@ -18,6 +18,10 @@ jobs:
         with:
           node-version: 22
 
+      # 🔹 ДОБАВЛЯЕМ ЭТОТ ШАГ
+      - name: Create empty .env for tsx
+        run: touch .env
+
       - name: Install dependencies
         run: npm ci
 
@@ -60,5 +64,6 @@ jobs:
         run: npm run -w @junior-ua/api search:reindex
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          API_SEARCH_ENABLED: false
+          API_SEARCH_ENABLED: "false"   # лучше строкой
           API_ADMIN_TOKEN: ${{ secrets.API_ADMIN_TOKEN }}
+
