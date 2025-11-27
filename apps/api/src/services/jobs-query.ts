@@ -51,19 +51,19 @@ function buildJobWhere(input: JobQueryInput): Prisma.JobWhereInput {
     const search = input.q.trim();
     filters.push({
       OR: [
-        { title: { contains: search, mode: 'insensitive' } },
-        { city: { contains: search, mode: 'insensitive' } },
-        { company: { name: { contains: search, mode: 'insensitive' } } }
+        { title: { contains: search, mode: 'insensitive' as const } },
+        { city: { contains: search, mode: 'insensitive' as const } },
+        { company: { name: { contains: search, mode: 'insensitive' as const } } }
       ]
     });
   }
 
   if (input.city) {
-    filters.push({ city: { equals: input.city.trim(), mode: 'insensitive' } });
+    filters.push({ city: { equals: input.city.trim(), mode: 'insensitive' as const } });
   }
 
   if (input.region) {
-    filters.push({ region: { code: { equals: input.region.trim(), mode: 'insensitive' } } });
+    filters.push({ region: { code: { equals: input.region.trim(), mode: 'insensitive' as const } } });
   }
 
   if (input.country) {
@@ -88,8 +88,8 @@ function buildJobWhere(input: JobQueryInput): Prisma.JobWhereInput {
       .map((tag) => ({
         OR: [
           { tags: { has: tag } },
-          { title: { contains: tag, mode: 'insensitive' } },
-          { description: { contains: tag, mode: 'insensitive' } }
+          { title: { contains: tag, mode: 'insensitive' as const } },
+          { description: { contains: tag, mode: 'insensitive' as const } }
         ]
       }));
 
@@ -112,9 +112,9 @@ function buildJobWhere(input: JobQueryInput): Prisma.JobWhereInput {
       // Experience is also soft: match dedicated field OR text fields
       filters.push({
         OR: [
-          { experience: { equals: experience, mode: 'insensitive' } },
-          { title: { contains: experience, mode: 'insensitive' } },
-          { description: { contains: experience, mode: 'insensitive' } }
+          { experience: { equals: experience, mode: 'insensitive' as const } },
+          { title: { contains: experience, mode: 'insensitive' as const } },
+          { description: { contains: experience, mode: 'insensitive' as const } }
         ]
       });
     }
