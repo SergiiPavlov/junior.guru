@@ -10,7 +10,7 @@ export function createCors(allowedOrigin: string): MiddlewareHandler {
 
     if (context.req.method === 'OPTIONS') {
       context.header('Access-Control-Allow-Origin', allowedOrigin);
-      context.header('Access-Control-Allow-Methods', 'GET,OPTIONS');
+      context.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
       context.header('Access-Control-Allow-Headers', 'Content-Type');
       context.header('Vary', 'Origin');
       return context.newResponse('', { status: 204 });
@@ -19,7 +19,7 @@ export function createCors(allowedOrigin: string): MiddlewareHandler {
     await next();
 
     context.header('Access-Control-Allow-Origin', allowedOrigin);
-    context.header('Access-Control-Allow-Methods', 'GET,OPTIONS');
+    context.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
     context.header('Access-Control-Allow-Headers', 'Content-Type');
     context.header('Vary', 'Origin');
   };
