@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Junior UA",
-    "description": "Jobs and events for juniors (and not only) in Ukraine"
+    "description": "Jobs and events for juniors(and not only) in Ukraine"
   },
   "navigation": {
     "home": "Home",
@@ -23,7 +23,7 @@
   },
   "home": {
     "heroTitle": "Welcome to Junior UA",
-    "heroSubtitle": "A platform for juniors (and not only): jobs, events, community.",
+    "heroSubtitle": "A platform for juniors(and not only): jobs, events, community.",
     "ctaJobs": "Browse jobs",
     "ctaEvents": "Events",
     "latestJobs": "Latest jobs",
