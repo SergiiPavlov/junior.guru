@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 22
 
-      # 🔹 ДОБАВЛЯЕМ ЭТОТ ШАГ
+      # 🔹 нужен пустой .env в корне, чтобы tsx с --env-file=../../.env не ругался
       - name: Create empty .env for tsx
         run: touch .env
 
@@ -27,6 +27,12 @@ jobs:
 
       - name: Install Turbo cache (optional, faster)
         run: npm install turbo --global
+
+      # 🔹 НОВЫЙ ШАГ — генерируем Prisma Client для всех, кто его использует (API, workers)
+      - name: Generate Prisma Client
+        run: npm run -w @junior-ua/api prisma:generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run Jooble Worker
         run: npm run -w @junior-ua/workers jobs:run:jooble
@@ -65,5 +71,7 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           API_SEARCH_ENABLED: "false"   # лучше строкой
+          API_ADMIN_TOKEN: ${{ secrets.API_ADMIN_TOKEN }}
+
           API_ADMIN_TOKEN: ${{ secrets.API_ADMIN_TOKEN }}
 
