@@ -15,33 +15,43 @@ export const CITY_SUGGESTIONS = [
   "Dnipro",
   "Odesa",
   "Warsaw",
-  "Kraków",
+  "Krakow",
+  "Berlin",
   "Remote"
 ];
 
-export const SKILL_SUGGESTIONS = [
-  "JavaScript",
-  "TypeScript",
-  "React",
-  "Node.js",
-  "Next.js",
-  "HTML",
-  "CSS",
-  "Tailwind",
-  "Python",
-  "Java"
+export const REGION_SUGGESTIONS = [
+  "Kyiv region",
+  "Lviv region",
+  "Kharkiv region",
+  "Dnipro region",
+  "Odesa region",
+  "Masovian",
+  "Lesser Poland",
+  "Berlin",
+  "Remote"
+];
+
+export const COUNTRY_OPTIONS = [
+  { code: "UA", label: "Ukraine" },
+  { code: "PL", label: "Poland" },
+  { code: "DE", label: "Germany" }
 ];
 
 export const TAG_SUGGESTIONS = [
   "frontend",
   "backend",
   "fullstack",
-  "intern",
-  "junior",
-  "middle",
-  "senior",
-  "remote",
-  "hybrid"
+  "javascript",
+  "typescript",
+  "react",
+  "node.js",
+  "python",
+  "java",
+  "qa",
+  "devops",
+  "design",
+  "remote"
 ];
 
 export const LEVEL_OPTIONS = ["intern", "junior", "middle", "senior", "lead"];

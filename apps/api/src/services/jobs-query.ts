@@ -76,11 +76,26 @@ function buildJobWhere(input: JobQueryInput): Prisma.JobWhereInput {
   }
 
   if (input.skills.length > 0) {
+    // Keep skills strict: all selected skills must be present
     filters.push({ skills: { hasEvery: input.skills } });
   }
 
   if (input.tags.length > 0) {
-    filters.push({ tags: { hasEvery: input.tags } });
+    // Tags behave softer: match either job tags OR free-text fields (title/description)
+    const tagFilters = input.tags
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0)
+      .map((tag) => ({
+        OR: [
+          { tags: { has: tag } },
+          { title: { contains: tag, mode: 'insensitive' } },
+          { description: { contains: tag, mode: 'insensitive' } }
+        ]
+      }));
+
+    if (tagFilters.length > 0) {
+      filters.push({ OR: tagFilters });
+    }
   }
 
   if (input.salaryMin !== undefined) {
@@ -92,7 +107,17 @@ function buildJobWhere(input: JobQueryInput): Prisma.JobWhereInput {
   }
 
   if (input.experience) {
-    filters.push({ experience: { equals: input.experience.trim(), mode: 'insensitive' } });
+    const experience = input.experience.trim();
+    if (experience.length > 0) {
+      // Experience is also soft: match dedicated field OR text fields
+      filters.push({
+        OR: [
+          { experience: { equals: experience, mode: 'insensitive' } },
+          { title: { contains: experience, mode: 'insensitive' } },
+          { description: { contains: experience, mode: 'insensitive' } }
+        ]
+      });
+    }
   }
 
   return filters.length > 0 ? { AND: filters } : {};
