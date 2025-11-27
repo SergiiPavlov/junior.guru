@@ -73,5 +73,5 @@ jobs:
           API_SEARCH_ENABLED: "false"   # лучше строкой
           API_ADMIN_TOKEN: ${{ secrets.API_ADMIN_TOKEN }}
 
-          API_ADMIN_TOKEN: ${{ secrets.API_ADMIN_TOKEN }}
+
 
