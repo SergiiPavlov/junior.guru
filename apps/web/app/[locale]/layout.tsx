@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 
 import { LocaleEffect } from "../../components/common/LocaleEffect";
+import { DevBanner } from "../../components/layout/DevBanner";
 import { Footer } from "../../components/layout/Footer";
 import { Header } from "../../components/layout/Header";
 import { isLocale, locales, type Locale } from "../../lib/i18n/config";
@@ -19,10 +20,13 @@ type LocaleLayoutProps = {
 };
 
 export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
-  const { locale: localeParam } = await params;
-  if (!isLocale(localeParam)) {
+  const { locale: localeParamRaw } = await params;
+
+  if (!isLocale(localeParamRaw)) {
     notFound();
   }
+
+  const localeParam = localeParamRaw;
   const messages = await getMessagesForLocale(localeParam);
 
   return (
@@ -30,6 +34,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <LocaleEffect locale={localeParam} />
       <div className="flex min-h-screen flex-col">
         <Header />
+        <DevBanner />
         <main className="container flex-1 py-6">{children}</main>
         <Footer />
       </div>
