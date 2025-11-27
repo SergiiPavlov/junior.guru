@@ -53,7 +53,7 @@ jobs:
           if-no-files-found: ignore
 
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/junior_ua?schema=public
       NEXT_PUBLIC_API_BASE: http://localhost:8787/api/v1
@@ -112,3 +112,4 @@ jobs:
           name: playwright-report
           path: playwright-report
           if-no-files-found: ignore
+
