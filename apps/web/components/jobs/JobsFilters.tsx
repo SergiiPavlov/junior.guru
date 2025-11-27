@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-
 import { useLocale, useTranslations } from "../../lib/i18n/provider";
 
 import { KEYWORD_SUGGESTIONS, LEVEL_OPTIONS, SALARY_PRESETS, TAG_SUGGESTIONS } from "./filters-options";
+
 import { JobsAiDialog } from "./JobsAiDialog";
 
 const SORT_OPTIONS = ["recent", "relevant", "salary_desc", "salary_asc"] as const;
