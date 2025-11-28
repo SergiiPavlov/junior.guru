@@ -1,9 +1,9 @@
 "use client";
 
+import { Suspense, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
-import { createPortal } from "react-dom";
-import { Suspense, useEffect, useState } from "react";
 
 import { useLocale, useTranslations } from "../../lib/i18n/provider";
 import { LanguageSwitcher } from "../navigation/LanguageSwitcher";
