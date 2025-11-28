@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
-import { createPortal } from "react-dom";
-
+import Image from "next/image";
 import Link from "next/link";
+import { createPortal } from "react-dom";
+import { Suspense, useEffect, useState } from "react";
 
 import { useLocale, useTranslations } from "../../lib/i18n/provider";
 import { LanguageSwitcher } from "../navigation/LanguageSwitcher";
@@ -30,7 +30,7 @@ export function Header() {
           className="flex items-center gap-2 text-xl font-semibold text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2"
         >
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white">
-            <img src="/logo-juy.svg" alt="" className="h-7 w-7" />
+            <Image src="/logo-juy.svg" alt="" width={28} height={28} className="h-7 w-7" />
           </span>
           <span className="font-semibold">Junior UA</span>
         </Link>
