@@ -35,7 +35,7 @@ export function LanguageSwitcher() {
 
   return (
     <div className="flex items-center gap-2" aria-label={t("label")}>
-      <span className="text-sm text-gray-500">{t("label")}</span>
+      <span className="hidden text-sm text-gray-500 md:inline">{t("label")}</span>
       <div className="flex gap-1" role="group" aria-label={t("label")}>
         {locales.map((code) => {
           const isActive = code === locale;

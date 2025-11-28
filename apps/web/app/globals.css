@@ -9,7 +9,7 @@
   --accent-soft: #dbeafe;
   --accent-dark: #1d4ed8;
 }
-body { @apply antialiased; background: var(--bg); color: var(--fg); }
+body { @apply antialiased; background: var(--bg); color: var(--fg); overflow-x: hidden; }
 a { text-decoration: none; }
 .container { @apply max-w-5xl mx-auto px-4; }
 .card { @apply rounded-2xl border border-gray-200 bg-white/90 p-5 shadow-md transition-transform transition-shadow hover:shadow-lg hover:-translate-y-0.5; }
